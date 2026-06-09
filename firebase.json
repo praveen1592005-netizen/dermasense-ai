@@ -1,0 +1,39 @@
+{
+  "hosting": {
+    "public": "build/web",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "headers": [
+      {
+        "source": "**/*.apk",
+        "headers": [
+          { "key": "Content-Type", "value": "application/vnd.android.package-archive" },
+          { "key": "Content-Disposition", "value": "attachment; filename=\"DermaSense-AI.apk\"" }
+        ]
+      }
+    ],
+    "rewrites": [
+      { "source": "/DermaSense-AI.apk", "destination": "/DermaSense-AI.apk" },
+      { "source": "**", "destination": "/index.html" }
+    ]
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "dermasense-ai-18698",
+          "appId": "1:852529496081:android:fed72affc7e84913ebb1b0",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "dermasense-ai-18698",
+          "configurations": {
+            "android": "1:852529496081:android:fed72affc7e84913ebb1b0",
+            "web": "1:852529496081:web:e9d998bfa9f9d6dbebb1b0"
+          }
+        }
+      }
+    }
+  }
+}

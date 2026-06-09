@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pandas
+numpy
+tensorflow
+pillow
+kaggle
+python-multipart
+scipy
