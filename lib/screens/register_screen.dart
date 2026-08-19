@@ -100,7 +100,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Semantics(
+      label: 'register_screen',
+      child: Scaffold(
       backgroundColor: const Color(0xFF0F0C1B),
       body: Stack(
         children: [
@@ -380,6 +382,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           ),
         ],
       ),
+    ),
     );
   }
 

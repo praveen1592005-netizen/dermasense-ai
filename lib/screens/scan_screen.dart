@@ -1,4 +1,3 @@
-// lib/screens/scan_screen.dart
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -6,8 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
 import '../services/firestore_service.dart';
+import '../services/theme_service.dart';
 import '../models/health_score_model.dart';
 import '../services/health_score_service.dart';
+import 'patient_info_screen.dart';
 import 'result_screen.dart';
 import 'skincare_screen.dart';
 
@@ -38,7 +39,15 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
         _imageFile = picked;
         _imageBytes = bytes;
       });
-      await _runPrediction(bytes);
+
+      // Show patient info form before running prediction
+      if (!mounted) return;
+      final patientInfo = await Navigator.push<PatientInfo?>(
+        context,
+        MaterialPageRoute(builder: (_) => const PatientInfoScreen()),
+      );
+
+      await _runPrediction(bytes, patientInfo: patientInfo);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -50,34 +59,34 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
     }
   }
 
-  Future<void> _runPrediction(Uint8List bytes) async {
+  Future<void> _runPrediction(Uint8List bytes, {PatientInfo? patientInfo}) async {
     setState(() {
       _isLoading = true;
-      _loadingMessage = 'Processing image...';
+      _loadingMessage = '🔍 Checking image quality...';
     });
     try {
       final base64Img = base64Encode(bytes);
-      setState(() => _loadingMessage = 'AI is analyzing the skin condition...');
+
+      setState(() => _loadingMessage = '🧠 EfficientNet AI is classifying...');
       final api = ref.read(apiClientProvider);
-      final response = await api.predict(base64Img);
+      final response = await api.predictHybrid(base64Img, patientInfo: patientInfo);
+
       // Save result so SkincareScreen shows personalized content
       ref.read(lastScanResultProvider.notifier).state = response;
 
-      // Persist to Firestore (non-blocking — don't prevent result screen)
+      // Persist to Firestore (non-blocking)
       try {
-        setState(() => _loadingMessage = 'Saving to history...');
-        await ref.read(firestoreServiceProvider).saveScan(
+        setState(() => _loadingMessage = '💾 Saving to history...');
+        ref.read(firestoreServiceProvider).saveScan(
           prediction: response,
           imageBytes: bytes,
-        );
-        // Calculate and Save Skin Health Score
-        final score = HealthScoreModel.fromPrediction(response);
-        await ref.read(healthScoreServiceProvider).saveHealthScore(score);
-      } catch (_) {
-        // Firestore save failed (user not logged in / permissions) — continue
-      }
+        ).catchError((e) => null);
 
-      setState(() => _loadingMessage = 'Generating recommendations...');
+        final score = HealthScoreModel.fromPrediction(response);
+        ref.read(healthScoreServiceProvider).saveHealthScore(score).catchError((e) => null);
+      } catch (_) {}
+
+      setState(() => _loadingMessage = '✅ Generating full report...');
       await Future.delayed(const Duration(milliseconds: 300));
       if (!mounted) return;
       Navigator.of(context).push(MaterialPageRoute(
@@ -85,36 +94,119 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
       ));
     } catch (e) {
       if (!mounted) return;
+      final errStr = e.toString();
+      if (errStr.contains('NO_SKIN_NO_API')) {
+        setState(() => _isLoading = false);
+        _showNoFaceDialog(
+          title: 'API Key Required',
+          message: 'To validate your image, a Gemini API key is required. Please add your API key in Settings, then try again.',
+          icon: Icons.key_rounded,
+          iconColor: Colors.orange,
+        );
+        return;
+      }
+      if (errStr.contains('NO_SKIN')) {
+        setState(() => _isLoading = false);
+        _showNoFaceDialog();
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Analysis failed: $e'),
+          content: Text('Analysis failed: ${errStr.replaceAll('Exception:', '').trim()}'),
           backgroundColor: Colors.redAccent,
+          duration: const Duration(seconds: 5),
         ),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF1E1E2F),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: const Text('AI Skin Scanner',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+  void _showNoFaceDialog({
+    String title = 'No Skin Detected',
+    String message = 'The AI could not detect human skin in this image.\n\nPlease upload a clear photo of the affected skin area (face, arm, hand, back, etc.) for accurate analysis.',
+    IconData icon = Icons.face_retouching_off_rounded,
+    Color iconColor = Colors.amber,
+  }) {
+    final themeMode = ref.read(themeProvider);
+    final isDark = themeMode == ThemeMode.dark;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF2A2A3B) : Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(icon, color: iconColor, size: 28),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(title,
+                  style: TextStyle(
+                      color: isDark ? Colors.white : Colors.black87,
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold)),
+            ),
+          ],
         ),
+        content: Text(
+          message,
+          style: TextStyle(
+              color: isDark ? Colors.white70 : Colors.black54,
+              fontSize: 14,
+              height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() {
+                _imageBytes = null;
+                _imageFile = null;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF6A1B9A), Color(0xFF283593)],
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Text('Try Again',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+          ),
+        ],
       ),
-      body: _isLoading ? _buildLoading() : _buildContent(),
     );
   }
 
-  Widget _buildLoading() {
+  @override
+  Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeProvider);
+    final isDark = themeMode == ThemeMode.dark;
+    final bgColor = isDark ? const Color(0xFF1E1E2F) : const Color(0xFFF5F6FA);
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final subtextColor = isDark ? Colors.white54 : Colors.black54;
+
+    return Scaffold(
+      backgroundColor: bgColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text('AI Skin Scanner',
+            style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: textColor),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: _isLoading ? _buildLoading(textColor) : _buildContent(isDark, textColor, subtextColor),
+    );
+  }
+
+  Widget _buildLoading(Color textColor) {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -140,25 +232,25 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
           Text(
             _loadingMessage,
             style:
-                const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
+                TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Powered by DermaSense AI',
-            style: TextStyle(color: Colors.white38, fontSize: 13),
+            style: TextStyle(color: textColor.withOpacity(0.4), fontSize: 13),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(bool isDark, Color textColor, Color subtextColor) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Hero banner
+          // Hero banner (always gradient - looks great in both modes)
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(24),
@@ -171,19 +263,19 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
               borderRadius: BorderRadius.circular(24),
             ),
             child: Column(
-              children: [
-                const Icon(Icons.document_scanner,
+              children: const [
+                Icon(Icons.document_scanner,
                     color: Colors.white, size: 52),
-                const SizedBox(height: 14),
-                const Text(
+                SizedBox(height: 14),
+                Text(
                   'AI Skin Disease Detection',
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
                       fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8),
-                const Text(
+                SizedBox(height: 8),
+                Text(
                   'Upload a clear photo of the affected skin area for an instant AI-powered analysis.',
                   style: TextStyle(color: Colors.white70, fontSize: 14),
                   textAlign: TextAlign.center,
@@ -225,26 +317,29 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
           Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
+              color: isDark ? Colors.white.withOpacity(0.05) : Colors.white,
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
+              border: Border.all(
+                  color: isDark
+                      ? Colors.white.withOpacity(0.1)
+                      : Colors.black.withOpacity(0.07)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
                   '📸  Tips for Best Results',
                   style: TextStyle(
-                      color: Colors.white,
+                      color: textColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 15),
                 ),
-                SizedBox(height: 12),
-                _Tip('Ensure good natural lighting on the area'),
-                _Tip('Hold camera still — avoid motion blur'),
-                _Tip('Capture only the affected skin region'),
-                _Tip('Avoid shadows falling on the skin'),
-                _Tip('Clean the area before scanning'),
+                const SizedBox(height: 12),
+                _Tip('Ensure good natural lighting on the area', subtextColor),
+                _Tip('Hold camera still — avoid motion blur', subtextColor),
+                _Tip('Capture only the affected skin region', subtextColor),
+                _Tip('Avoid shadows falling on the skin', subtextColor),
+                _Tip('Clean the area before scanning', subtextColor),
               ],
             ),
           ),
@@ -307,7 +402,8 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
 
 class _Tip extends StatelessWidget {
   final String text;
-  const _Tip(this.text);
+  final Color textColor;
+  const _Tip(this.text, this.textColor);
 
   @override
   Widget build(BuildContext context) {
@@ -325,8 +421,7 @@ class _Tip extends StatelessWidget {
           ),
           Expanded(
             child: Text(text,
-                style:
-                    const TextStyle(color: Colors.white70, fontSize: 13)),
+                style: TextStyle(color: textColor, fontSize: 13)),
           ),
         ],
       ),

@@ -1,258 +1,382 @@
-import os
-import base64
-import io
-import numpy as np
-from typing import Dict, Any
-from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
-from PIL import Image, ImageFilter
+"""
+DermaSense AI — Hybrid Prediction API v2.0
+==========================================
+Endpoints:
+  POST /predict              → Legacy single-prediction (kept for compatibility)
+  POST /predict/hybrid       → New: Image Quality → EfficientNetV2B3 Top-5 → Gemini Report
+  GET  /predict/classes      → List all supported disease classes
+"""
 
-try:
-    import tensorflow as tf
-except ImportError:
-    tf = None
+import os, io, base64, json, httpx
+import numpy as np
+from typing import Optional
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form
+from pydantic import BaseModel
+from PIL import Image
 
 router = APIRouter()
 
-# Determine paths dynamically
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-MODEL_PATH = os.path.join(os.path.dirname(BASE_DIR), "model", "dermasense_model.keras")
-CLASSES_PATH = os.path.join(BASE_DIR, "model_classes.txt")
+# ─── Import inference module ─────────────────────────────────────────────────
+try:
+    import sys
+    _backend = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    if _backend not in sys.path:
+        sys.path.insert(0, _backend)
+    from inference import (
+        validate_image_quality, get_top5_predictions,
+        decode_base64_image, get_class_names, model_is_loaded,
+        ImageQualityError,
+    )
+    INFERENCE_AVAILABLE = True
+except Exception as e:
+    print(f"[DermaSense] inference.py not available: {e}")
+    INFERENCE_AVAILABLE = False
 
-# Default classes based on HAM10000 standard
-CLASS_NAMES = [
-    'Actinic Keratosis', 
-    'Basal Cell Carcinoma', 
-    'Benign Keratosis', 
-    'Dermatofibroma', 
-    'Melanocytic Nevi', 
-    'Melanoma', 
-    'Vascular Lesion'
-]
+# ─── Gemini config ───────────────────────────────────────────────────────────
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+GEMINI_URL     = (
+    "https://generativelanguage.googleapis.com/v1beta/models/"
+    "gemini-2.5-flash:generateContent?key={key}"
+)
 
-# Load classes from model_classes.txt if trained dynamically
-if os.path.exists(CLASSES_PATH):
-    try:
-        with open(CLASSES_PATH, "r") as f:
-            CLASS_NAMES = [line.strip() for line in f if line.strip()]
-        print(f"Loaded dynamic class names: {CLASS_NAMES}")
-    except Exception as e:
-        print(f"Error loading dynamic classes: {e}")
+# ─── Cancer risk thresholds ──────────────────────────────────────────────────
+HIGH_RISK_DISEASES  = {"Melanoma", "Basal Cell Carcinoma", "Squamous Cell Carcinoma", "Actinic Keratosis"}
+URGENT_THRESHOLD    = 0.70  # Melanoma confidence above this → URGENT warning
 
-# Load model once at startup
-model = None
-if tf:
-    try:
-        if os.path.exists(MODEL_PATH):
-            model = tf.keras.models.load_model(MODEL_PATH)
-            print(f"Successfully loaded real TensorFlow model from {MODEL_PATH}")
-        else:
-            print(f"Model path {MODEL_PATH} not found. Running with mock fallback.")
-    except Exception as e:
-        print(f"Failed to load model: {e}")
-
-# Confidence threshold below which we classify as Healthy Skin
-HEALTHY_THRESHOLD = 0.60
-
-# High-fidelity medical recommendations mapping
-RECOMMENDATIONS = {
-    'Healthy Skin': {
-        'severity': 'None — Healthy',
-        'risk': 'None',
-        'explanation': 'No significant skin disease was detected in this image. Your skin appears healthy! Continue with good skincare habits to maintain it.',
-        'treatment': 'No treatment needed. Maintain your current skincare routine, stay hydrated, wear sunscreen daily, and schedule annual dermatology check-ups.',
-        'skincare': [
-            'Apply broad-spectrum SPF 30+ sunscreen every morning',
-            'Cleanse gently twice daily with a pH-balanced cleanser',
-            'Moisturise daily to maintain your skin barrier',
-            'Drink plenty of water and eat antioxidant-rich foods',
-            'Get a professional skin check annually'
-        ],
-        'urgency': 'Your skin looks great! Keep up the good habits and see a dermatologist annually for routine check-ups.',
-        'needsDoctor': False
+# ─── Curated fallback metadata per class ────────────────────────────────────
+FALLBACK_META = {
+    "Melanoma": {
+        "severity": "Critical", "risk": "High",
+        "needsDoctor": True,
+        "urgency": "⚠️ URGENT — Schedule an appointment with a dermatologist within 1-2 days.",
     },
-    'Melanocytic Nevi': {
-        'severity': 'Mild (Typically Benign)',
-        'risk': 'Low',
-        'explanation': 'Common mole, usually benign. Continue to monitor for any changes in shape, border, color, or diameter (ABCDE rule).',
-        'treatment': 'No active treatment needed. Perform self-checks monthly and protect skin from excess solar exposure.',
-        'skincare': [
-            'Use broad-spectrum SPF 30+ daily',
-            'Avoid excessive sun exposure during peak hours',
-            'Keep skin hydrated with a gentle moisturizer',
-            'Perform monthly self-checks using the ABCDE rule'
-        ],
-        'urgency': 'Self-monitor monthly; consult a doctor if you notice changes in size, shape, or color.',
-        'needsDoctor': False
+    "Basal Cell Carcinoma": {
+        "severity": "Severe", "risk": "Moderate-High",
+        "needsDoctor": True,
+        "urgency": "Consult a dermatologist within 2-4 weeks.",
     },
-    'Melanoma': {
-        'severity': 'Critical',
-        'risk': 'High',
-        'explanation': 'This lesion shows characteristics suggestive of Melanoma, a serious type of skin cancer originating from melanocytes.',
-        'treatment': 'CRITICAL: Schedule an urgent appointment with a board-certified dermatologist. An immediate clinical biopsy is highly recommended.',
-        'skincare': [
-            'Apply SPF 50+ sunscreen daily',
-            'Avoid any sun exposure on the affected area',
-            'Wear protective clothing (hats, long sleeves)',
-            'Do not scratch, irritate, or try to self-treat the lesion'
-        ],
-        'urgency': '⚠️ Urgent: Schedule a dermatological evaluation as soon as possible (within 1-2 weeks).',
-        'needsDoctor': True
+    "Squamous Cell Carcinoma": {
+        "severity": "Severe", "risk": "High",
+        "needsDoctor": True,
+        "urgency": "Consult a dermatologist urgently.",
     },
-    'Benign Keratosis': {
-        'severity': 'Mild',
-        'risk': 'Low',
-        'explanation': 'Benign skin growth, extremely common in older adults. Not cancerous.',
-        'treatment': 'Treatment is optional and generally cosmetic (cryotherapy or light curettage) unless the growth becomes irritated.',
-        'skincare': [
-            'Moisturize the area to prevent dryness',
-            'Avoid scratching or picking at the growth',
-            'Use gentle body washes',
-            'Protect the area from friction and tight clothing'
-        ],
-        'urgency': 'See a dermatologist if the lesion becomes irritated, itchy, or bleeds.',
-        'needsDoctor': False
+    "Actinic Keratosis": {
+        "severity": "Moderate (Pre-cancerous)", "risk": "Moderate",
+        "needsDoctor": True,
+        "urgency": "Schedule a dermatological appointment within a month.",
     },
-    'Basal Cell Carcinoma': {
-        'severity': 'Severe',
-        'risk': 'Medium to High',
-        'explanation': 'Most common form of skin cancer. Locally invasive but extremely slow-growing and rarely metastasizes.',
-        'treatment': 'Consult a dermatologist. Highly curable with standard surgical excision, Mohs surgery, or topical treatments.',
-        'skincare': [
-            'Use mineral sunscreen SPF 30+ daily',
-            'Keep the area clean and protected',
-            'Avoid picking at any crusting or scabs',
-            'Protect skin from further sun damage'
-        ],
-        'urgency': 'Consult a dermatologist within 2-4 weeks for treatment options.',
-        'needsDoctor': True
+    "Melanocytic Nevi": {
+        "severity": "Mild (Typically Benign)", "risk": "Low",
+        "needsDoctor": False,
+        "urgency": "Monitor monthly using the ABCDE rule.",
     },
-    'Actinic Keratosis': {
-        'severity': 'Moderate (Pre-cancerous)',
-        'risk': 'Medium',
-        'explanation': 'Rough, scaly patch on the skin caused by years of sun exposure. Can occasionally transition into squamous cell carcinoma.',
-        'treatment': 'Requires dermatological evaluation. Common therapies include cryotherapy, photodynamic therapy, or topical prescription creams.',
-        'skincare': [
-            'Apply broad-spectrum sunscreen daily (SPF 30+)',
-            'Use gentle exfoliants to manage scaling',
-            'Keep skin well-hydrated',
-            'Avoid tanning beds and direct sun exposure'
-        ],
-        'urgency': 'Schedule a dermatological appointment within a month to prevent potential progression.',
-        'needsDoctor': True
+    "Benign Keratosis": {
+        "severity": "Mild", "risk": "Low",
+        "needsDoctor": False,
+        "urgency": "See a dermatologist if irritated or bleeds.",
     },
-    'Vascular Lesion': {
-        'severity': 'Mild',
-        'risk': 'Low',
-        'explanation': 'Benign vascular anomalies like cherry angiomas or hemangiomas, consisting of clustered capillaries.',
-        'treatment': 'No medical intervention required. Optional laser ablation or cryosurgery for aesthetic preferences.',
-        'skincare': [
-            'Apply standard moisturizer',
-            'Avoid picking or scratching (can bleed easily)',
-            'Protect from physical trauma',
-            'Use gentle cleansers'
-        ],
-        'urgency': 'No treatment needed unless cosmetic removal is desired or bleeding occurs.',
-        'needsDoctor': False
+    "Dermatofibroma": {
+        "severity": "Mild", "risk": "Low",
+        "needsDoctor": False,
+        "urgency": "Safe to leave untreated; consult if grows rapidly.",
     },
-    'Dermatofibroma': {
-        'severity': 'Mild',
-        'risk': 'Low',
-        'explanation': 'Common benign fibrous nodule, typically found on the lower legs. Firm to the touch.',
-        'treatment': 'Benign and safe to leave alone. Surgical excision is only necessary if highly symptomatic or aesthetically disruptive.',
-        'skincare': [
-            'Keep skin hydrated',
-            'Avoid shaving directly over the nodule if raised',
-            'Do not try to squeeze or pop the nodule',
-            'Use gentle cleansers'
-        ],
-        'urgency': 'Safe to leave untreated; consult a doctor if it grows rapidly or becomes painful.',
-        'needsDoctor': False
-    }
+    "Vascular Lesion": {
+        "severity": "Mild", "risk": "Low",
+        "needsDoctor": False,
+        "urgency": "No treatment needed unless cosmetic removal is desired.",
+    },
+    "Clear Skin": {
+        "severity": "None — Healthy", "risk": "None",
+        "needsDoctor": False,
+        "urgency": "No action needed. Continue routine skincare.",
+    },
 }
 
-class PredictRequest(BaseModel):
+
+# ══════════════════════════════════════════════════════════════════════════════
+# REQUEST / RESPONSE MODELS
+# ══════════════════════════════════════════════════════════════════════════════
+
+class PatientInfo(BaseModel):
+    age:            Optional[int]  = None
+    gender:         Optional[str] = None
+    body_location:  Optional[str] = None
+    duration_days:  Optional[int] = None
+    itching:        Optional[bool] = None
+    pain:           Optional[bool] = None
+    bleeding:       Optional[bool] = None
+    growing:        Optional[bool] = None
+    family_history: Optional[bool] = None
+
+
+class HybridRequest(BaseModel):
+    image_base64: str
+    patient_info: Optional[PatientInfo] = None
+
+
+class LegacyRequest(BaseModel):
     image_base64: str
 
-def preprocess_image(image: Image.Image) -> np.ndarray:
-    # Match exact MobileNetV2 inputs [-1, 1] range
-    img = image.resize((224, 224))
-    arr = np.array(img).astype(np.float32)
-    if tf is not None:
-        from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
-        arr = preprocess_input(arr)
-    else:
-        # Match standard MobileNetV2 pre-processing manually if TF is offline
-        arr = arr / 127.5 - 1.0
-    arr = np.expand_dims(arr, axis=0)  # batch dimension
-    return arr
 
-def is_blurry(image: Image.Image) -> bool:
-    # Convert to grayscale
-    gray = image.convert('L')
-    # Use FIND_EDGES to estimate sharpness
-    edges = gray.filter(ImageFilter.FIND_EDGES)
-    # Get variance of edges
-    stat = np.array(edges)
-    variance = stat.var()
-    # A variance below 50 typically indicates a very blurry image
-    return variance < 50.0
+# ══════════════════════════════════════════════════════════════════════════════
+# GEMINI ORCHESTRATION
+# ══════════════════════════════════════════════════════════════════════════════
+
+async def call_gemini_explainer(
+    top5: list[dict],
+    patient: PatientInfo | None,
+    image_b64: str,
+) -> dict:
+    """
+    Gemini acts ONLY as a medical explainer — it does NOT diagnose.
+    It receives the Top-5 CNN predictions + patient info.
+    """
+    if not GEMINI_API_KEY:
+        return _fallback_explanation(top5)
+
+    # Build patient context string
+    patient_ctx = ""
+    if patient:
+        lines = []
+        if patient.age:          lines.append(f"Age: {patient.age}")
+        if patient.gender:       lines.append(f"Gender: {patient.gender}")
+        if patient.body_location:lines.append(f"Body Location: {patient.body_location}")
+        if patient.duration_days:lines.append(f"Duration: ~{patient.duration_days} days")
+        if patient.itching  is not None: lines.append(f"Itching: {'Yes' if patient.itching else 'No'}")
+        if patient.pain     is not None: lines.append(f"Pain: {'Yes' if patient.pain else 'No'}")
+        if patient.bleeding is not None: lines.append(f"Bleeding: {'Yes' if patient.bleeding else 'No'}")
+        if patient.growing  is not None: lines.append(f"Growing: {'Yes' if patient.growing else 'No'}")
+        if patient.family_history is not None:
+            lines.append(f"Family History of Skin Cancer: {'Yes' if patient.family_history else 'No'}")
+        if lines:
+            patient_ctx = "PATIENT INFORMATION:\n" + "\n".join(lines)
+
+    top5_ctx = "CNN MODEL TOP-5 PREDICTIONS (do NOT override these):\n"
+    for p in top5:
+        top5_ctx += f"  {p['rank']}. {p['disease']} — {p['confidence']*100:.1f}%\n"
+
+    prompt = f"""You are a senior medical AI assistant working alongside a dermatology CNN classifier.
+Your role is STRICTLY to explain and elaborate on the CNN's findings. You must NOT make your own visual diagnosis.
+
+{top5_ctx}
+
+{patient_ctx}
+
+Based on the CNN's PRIMARY diagnosis of "{top5[0]['disease']}" ({top5[0]['confidence']*100:.1f}% confidence), provide:
+
+1. A clear, patient-friendly explanation of what "{top5[0]['disease']}" is.
+2. Common symptoms the patient might experience.
+3. Risk level and potential complications if untreated.
+4. Recommended precautions.
+5. Whether urgent dermatologist consultation is required.
+6. A personalized skincare routine (5 steps) appropriate for this condition.
+
+Respond ONLY with this exact JSON (no markdown, no extra text):
+{{
+  "explanation": "<2-3 clear sentences explaining the condition based on CNN result>",
+  "symptoms": ["<symptom 1>", "<symptom 2>", "<symptom 3>"],
+  "risks": "<what happens if untreated>",
+  "precautions": ["<precaution 1>", "<precaution 2>", "<precaution 3>"],
+  "skincare": ["<step 1>", "<step 2>", "<step 3>", "<step 4>", "<step 5>"],
+  "treatment": "<first-line treatment options>",
+  "consultation_advice": "<specific advice on when/how urgently to see a doctor>"
+}}"""
+
+    payload = {
+        "contents": [{"parts": [
+            {"inline_data": {"mime_type": "image/jpeg", "data": image_b64}},
+            {"text": prompt},
+        ]}],
+        "generationConfig": {"temperature": 0.1, "maxOutputTokens": 1500},
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=45) as client:
+            for attempt in range(3):
+                resp = await client.post(
+                    GEMINI_URL.format(key=GEMINI_API_KEY),
+                    headers={"Content-Type": "application/json"},
+                    json=payload,
+                )
+                if resp.status_code == 200:
+                    break
+                if resp.status_code in (429, 503) and attempt < 2:
+                    import asyncio
+                    await asyncio.sleep(2 ** attempt * 2)
+                    continue
+                return _fallback_explanation(top5)
+
+        data       = resp.json()
+        candidates = data.get("candidates", [])
+        if not candidates:
+            return _fallback_explanation(top5)
+
+        text = candidates[0]["content"]["parts"][0]["text"].strip()
+        if text.startswith("```"):
+            text = text.replace("```json", "").replace("```", "").strip()
+        j = text[text.index("{"):text.rindex("}")+1]
+        return json.loads(j)
+
+    except Exception as e:
+        print(f"[DermaSense] Gemini error: {e}")
+        return _fallback_explanation(top5)
+
+
+def _fallback_explanation(top5: list[dict]) -> dict:
+    """Offline fallback when Gemini is unavailable."""
+    disease = top5[0]["disease"]
+    meta    = FALLBACK_META.get(disease, {})
+    return {
+        "explanation": f"The AI model identified this as {disease}. Please consult a dermatologist for a confirmed clinical diagnosis.",
+        "symptoms": ["Skin changes in the affected area"],
+        "risks": "Unknown without professional evaluation.",
+        "precautions": ["Avoid sun exposure", "Do not scratch or pick the lesion", "Consult a dermatologist"],
+        "skincare": [
+            "Apply broad-spectrum SPF 30+ sunscreen daily",
+            "Cleanse gently with pH-balanced cleanser",
+            "Moisturize daily",
+            "Avoid harsh chemicals on the area",
+            "Schedule a professional skin check",
+        ],
+        "treatment": meta.get("urgency", "Consult a dermatologist."),
+        "consultation_advice": meta.get("urgency", "Please consult a certified dermatologist."),
+    }
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CANCER RISK SCORING
+# ══════════════════════════════════════════════════════════════════════════════
+
+def compute_cancer_risk(top5: list[dict]) -> dict:
+    """Compute a 0-100 cancer risk score based on Top-5 predictions."""
+    cancer_prob = 0.0
+    for pred in top5:
+        if pred["disease"] in HIGH_RISK_DISEASES:
+            cancer_prob += pred["confidence"]
+
+    cancer_prob = min(cancer_prob, 1.0)
+
+    if cancer_prob >= 0.70:
+        level = "High"
+        color = "red"
+    elif cancer_prob >= 0.40:
+        level = "Moderate"
+        color = "orange"
+    else:
+        level = "Low"
+        color = "green"
+
+    # Check for urgent Melanoma case
+    melanoma_conf = next(
+        (p["confidence"] for p in top5 if p["disease"] == "Melanoma"), 0.0
+    )
+    is_urgent = melanoma_conf >= URGENT_THRESHOLD or cancer_prob >= URGENT_THRESHOLD
+
+    return {
+        "cancer_risk_score": round(cancer_prob * 100, 1),
+        "cancer_risk_level": level,
+        "cancer_risk_color": color,
+        "urgent_consultation": is_urgent,
+        "melanoma_confidence": round(melanoma_conf * 100, 1),
+    }
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ENDPOINTS
+# ══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/classes")
+def get_classes():
+    """Return all supported disease classes."""
+    if INFERENCE_AVAILABLE:
+        return {"classes": get_class_names()}
+    return {"classes": list(FALLBACK_META.keys())}
+
 
 @router.post("/predict")
-async def predict(request: PredictRequest, user: Dict[str, Any] = Depends(lambda: {"uid": "dummy_user"})):
-    try:
-        # Decode base64 image data
-        image_data = base64.b64decode(request.image_base64)
-        pil_image = Image.open(io.BytesIO(image_data)).convert("RGB")
-        
-        # Validate image quality
-        if is_blurry(pil_image):
-            raise HTTPException(
-                status_code=400, 
-                detail="Image is too blurry. Please capture a clear, well-lit photo of the skin condition."
-            )
-            
-        processed = preprocess_image(pil_image)
-        
-        if model is not None:
-            # Perform Real Inference
-            preds = model.predict(processed)[0]
-            idx = int(np.argmax(preds))
-            confidence = float(preds[idx])
-            # If confidence is below threshold, treat as healthy skin
-            if confidence < HEALTHY_THRESHOLD:
-                disease = 'Healthy Skin'
-            else:
-                disease = CLASS_NAMES[idx]
-        else:
-            # Fallback Mock Model (Dynamic but simulated)
-            idx = np.random.randint(0, len(CLASS_NAMES))
-            confidence = float(np.random.rand() * 0.25 + 0.72)  # High-confidence mockup (72%-97%)
-            disease = CLASS_NAMES[idx]
-
-        # Fetch expert-curated metadata
-        rec = RECOMMENDATIONS.get(disease, {
-            'severity': 'Mild',
-            'risk': 'Low',
-            'explanation': f'Suggestive of {disease}. Consult professional dermatologist for confirmation.',
-            'treatment': 'Regular skin monitoring and professional clinical exam.',
-            'skincare': ['Consult professional dermatologist for skincare recommendations.'],
-            'urgency': 'Schedule a dermatological exam if you notice changes.',
-            'needsDoctor': False
-        })
-
-        prediction = {
-            "disease": disease,
-            "confidence": confidence,
-            "severity": rec['severity'],
-            "risk": rec['risk'],
-            "explanation": rec['explanation'],
-            "treatment": rec['treatment'],
-            "skincare": rec['skincare'],
-            "urgency": rec['urgency'],
-            "needsDoctor": rec['needsDoctor']
+async def predict_legacy(request: LegacyRequest):
+    """Legacy endpoint — kept for Flutter app compatibility."""
+    hybrid_req = HybridRequest(image_base64=request.image_base64)
+    result = await predict_hybrid(hybrid_req)
+    # Map new format back to old format for backward compatibility
+    top1 = result["top5"][0]
+    meta = FALLBACK_META.get(top1["disease"], {})
+    gemini = result.get("gemini_analysis", {})
+    return {
+        "result": {
+            "disease":     top1["disease"],
+            "confidence":  top1["confidence"],
+            "severity":    meta.get("severity", "Unknown"),
+            "risk":        meta.get("risk", "Unknown"),
+            "explanation": gemini.get("explanation", ""),
+            "treatment":   gemini.get("treatment", ""),
+            "skincare":    gemini.get("skincare", []),
+            "urgency":     gemini.get("consultation_advice", ""),
+            "needsDoctor": meta.get("needsDoctor", False),
+            "affected_area": "Uploaded Area",
+            "contagious":  False,
+            "symptoms":    gemini.get("symptoms", []),
         }
-        
-        return {"result": prediction, "user": user}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    }
+
+
+@router.post("/predict/hybrid")
+async def predict_hybrid(request: HybridRequest):
+    """
+    Full Hybrid Pipeline:
+      1. Image Quality Validation
+      2. EfficientNetV2-B3 → Top-5 Predictions
+      3. Gemini → Medical Explanation
+      4. Cancer Risk Scoring
+      5. Complete Patient Report
+    """
+    # ── 1. Decode image ───────────────────────────────────────────────────────
+    try:
+        img_bytes = decode_base64_image(request.image_base64) if INFERENCE_AVAILABLE \
+                    else base64.b64decode(request.image_base64)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid base64 image data.")
+
+    # ── 2. Image Quality Validation ──────────────────────────────────────────
+    if INFERENCE_AVAILABLE:
+        try:
+            validate_image_quality(img_bytes)
+        except ImageQualityError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+    
+    # ── 3. CNN Top-5 Predictions ─────────────────────────────────────────────
+    top5 = None
+    if INFERENCE_AVAILABLE and model_is_loaded():
+        top5 = get_top5_predictions(img_bytes)
+
+    if not top5:
+        # Model not available — use placeholder to still run Gemini
+        top5 = [{"rank": 1, "disease": "Unknown", "confidence": 0.0}]
+        model_used = "none"
+    else:
+        model_used = "EfficientNetV2-B3"
+
+    # ── 4. Cancer Risk Scoring ────────────────────────────────────────────────
+    risk_data = compute_cancer_risk(top5)
+
+    # ── 5. Gemini Medical Explanation ────────────────────────────────────────
+    gemini_result = await call_gemini_explainer(
+        top5=top5,
+        patient=request.patient_info,
+        image_b64=request.image_base64,
+    )
+
+    # ── 6. Assemble final report ──────────────────────────────────────────────
+    primary    = top5[0]
+    meta       = FALLBACK_META.get(primary["disease"], {})
+
+    return {
+        "model_used":   model_used,
+        "top5":         top5,
+        "primary":      primary,
+        "severity":     meta.get("severity", "Unknown"),
+        "needs_doctor": meta.get("needsDoctor", True),
+        "cancer_risk":  risk_data,
+        "gemini_analysis": gemini_result,
+        "patient_info": request.patient_info.dict() if request.patient_info else None,
+    }

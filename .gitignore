@@ -94,3 +94,8 @@ backend/datasets/
 backend/**/__pycache__/
 *.pyc
 *.pyo
+
+# Environment variables
+.env
+*.env
+

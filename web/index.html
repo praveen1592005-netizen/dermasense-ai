@@ -18,29 +18,142 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  
+  <!-- Primary Meta Tags -->
+  <title>DermaSense AI – AI-powered skin disease detection and dermatology assistance platform</title>
+  <meta name="title" content="DermaSense AI – AI-powered skin disease detection and dermatology assistance platform">
+  <meta name="description" content="DermaSense AI – AI-powered skin disease detection and dermatology assistance platform">
+  <meta name="keywords" content="DermaSense, Skin Cancer Detection, Dermatology AI, Melanoma Scanner, EfficientNet Skin Disease, Hybrid Medical AI, Skin Analysis, Skincare Routine AI">
+  <meta name="author" content="DermaSense AI Team">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://dermasense-ai-18698.web.app/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://dermasense-ai-18698.web.app/">
+  <meta property="og:title" content="DermaSense AI – Hybrid Skin Disease Detection Platform">
+  <meta property="og:description" content="DermaSense AI – AI-powered skin disease detection and dermatology assistance platform">
+  <meta property="og:image" content="https://dermasense-ai-18698.web.app/icons/Icon-512.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://dermasense-ai-18698.web.app/">
+  <meta property="twitter:title" content="DermaSense AI – Hybrid Skin Disease Detection Platform">
+  <meta property="twitter:description" content="DermaSense AI – AI-powered skin disease detection and dermatology assistance platform">
+  <meta property="twitter:image" content="https://dermasense-ai-18698.web.app/icons/Icon-512.png">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="derma_sense_ai">
+  <meta name="apple-mobile-web-app-title" content="DermaSense AI">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>derma_sense_ai</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- Structured Data (JSON-LD) for SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "MedicalWebSite",
+    "name": "DermaSense AI",
+    "url": "https://dermasense-ai-18698.web.app/",
+    "description": "AI-powered skin disease detection and dermatology assistance platform.",
+    "about": {
+      "@type": "MedicalCondition",
+      "name": "Skin Diseases",
+      "possibleTreatment": {
+        "@type": "MedicalTherapy",
+        "name": "Skincare plans"
+      }
+    }
+  }
+  </script>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
+  <!-- Helper script for dynamic DOM selector injection to support automation testing framework attributes -->
+  <script>
+    (function() {
+      function tagElements() {
+        // 1. Tag Email Fields
+        var emailFields = document.querySelectorAll('input[type="email"], input[placeholder*="Email"], [aria-label*="email"] input, [aria-label="email_field"]');
+        emailFields.forEach(function(el) {
+          var input = el.tagName === 'INPUT' ? el : el.querySelector('input');
+          var target = input || el;
+          target.id = 'email';
+          target.setAttribute('data-testid', 'email-input');
+          target.setAttribute('name', 'email');
+        });
 
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
+        // 2. Tag Password Fields
+        var passFields = document.querySelectorAll('input[type="password"], input[placeholder*="Password"], [aria-label*="password"] input, [aria-label="password_field"]');
+        passFields.forEach(function(el) {
+          var input = el.tagName === 'INPUT' ? el : el.querySelector('input');
+          var target = input || el;
+          target.id = 'password';
+          target.setAttribute('data-testid', 'password-input');
+          target.setAttribute('name', 'password');
+        });
+
+        // 3. Tag Login Button
+        var loginBtns = document.querySelectorAll('[aria-label="login_button"], [aria-label*="login"], [aria-label*="signin"]');
+        loginBtns.forEach(function(el) {
+          el.id = 'login-btn';
+          el.setAttribute('data-testid', 'login-btn');
+          el.setAttribute('aria-label', 'login_button');
+        });
+
+        // 4. Tag Google Button
+        var googleBtns = document.querySelectorAll('[aria-label="google-signin-btn"], [aria-label*="google"]');
+        googleBtns.forEach(function(el) {
+          el.id = 'google-signin-btn';
+          el.setAttribute('data-testid', 'google-signin-btn');
+          el.setAttribute('aria-label', 'google-signin-btn');
+        });
+
+        // 5. Tag Guest Access Button
+        var guestBtns = document.querySelectorAll('[aria-label="guest_button"], [aria-label*="guest"]');
+        guestBtns.forEach(function(el) {
+          el.id = 'guest-access-btn';
+          el.setAttribute('data-testid', 'guest-access-btn');
+          el.setAttribute('aria-label', 'guest_button');
+        });
+
+        // 6. Tag Forgot Password Link
+        var forgotBtns = document.querySelectorAll('[aria-label="forgot-password-link"], [aria-label*="forgot"]');
+        forgotBtns.forEach(function(el) {
+          el.id = 'forgot-password-link';
+          el.setAttribute('data-testid', 'forgot-password-link');
+          el.setAttribute('aria-label', 'forgot-password-link');
+        });
+
+        // 7. Tag Sign Up Link
+        var signupBtns = document.querySelectorAll('[aria-label="signup-link"], [aria-label*="signup"], [aria-label*="register"]');
+        signupBtns.forEach(function(el) {
+          el.id = 'signup-link';
+          el.setAttribute('data-testid', 'signup-link');
+          el.setAttribute('aria-label', 'signup-link');
+        });
+
+        // 8. Tag Dashboard Screen
+        var dashboards = document.querySelectorAll('[aria-label="dashboard_screen"], [aria-label*="dashboard"]');
+        dashboards.forEach(function(el) {
+          el.id = 'dashboard-screen';
+          el.setAttribute('data-testid', 'dashboard-screen');
+        });
+      }
+
+      // Periodically apply tags to catch dynamic client modifications
+      setInterval(tagElements, 200);
+      window.addEventListener('load', function() {
+        tagElements();
+        var observer = new MutationObserver(tagElements);
+        observer.observe(document.body, { childList: true, subtree: true });
+      });
+    })();
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

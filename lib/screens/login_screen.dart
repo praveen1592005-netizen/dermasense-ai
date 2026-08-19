@@ -77,16 +77,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _signInGuest() async {
-    setState(() => _loading = true);
-    try {
-      // Try anonymous sign-in
-      await FirebaseAuth.instance.signInAnonymously();
-      if (mounted) Navigator.pushReplacementNamed(context, '/dashboard');
-    } catch (e) {
-      // Direct bypass fallback if anonymous sign-in is disabled in Firebase
-      if (mounted) Navigator.pushReplacementNamed(context, '/dashboard');
-    } finally {
-      if (mounted) setState(() => _loading = false);
+    // Navigate immediately to dashboard. No Firebase auth required!
+    if (mounted) {
+      Navigator.pushReplacementNamed(context, '/dashboard');
     }
   }
 
@@ -224,57 +217,70 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       child: Column(
                         children: [
                           // Email field
-                          _inputField(
-                            controller: _emailCtrl,
-                            hint: 'Email Address',
-                            icon: Icons.email_outlined,
-                            keyboardType: TextInputType.emailAddress,
+                          Semantics(
+                            key: const Key('email-field'),
+                            label: 'email_field',
+                            child: _inputField(
+                              controller: _emailCtrl,
+                              hint: 'Email Address',
+                              icon: Icons.email_outlined,
+                              keyboardType: TextInputType.emailAddress,
+                            ),
                           ),
                           const SizedBox(height: 16),
 
                           // Password field
-                          TextField(
-                            controller: _passCtrl,
-                            obscureText: _obscure,
-                            style: GoogleFonts.plusJakartaSans(color: Colors.white),
-                            decoration: InputDecoration(
-                              hintText: 'Password',
-                              hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white30),
-                              filled: true,
-                              fillColor: const Color(0xFF161427),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              prefixIcon: const Icon(Icons.lock_outlined,
-                                  color: Colors.white54),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                    _obscure
-                                        ? Icons.visibility_off_outlined
-                                        : Icons.visibility_outlined,
-                                    color: Colors.white38),
-                                onPressed: () => setState(() => _obscure = !_obscure),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide: BorderSide(color: Colors.white.withOpacity(0.08)),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(color: Color(0xFF6A1B9A), width: 1.5),
+                          Semantics(
+                            label: 'password_field',
+                            child: TextField(
+                              key: const Key('password-input'),
+                              controller: _passCtrl,
+                              obscureText: _obscure,
+                              style: GoogleFonts.plusJakartaSans(color: Colors.white),
+                              decoration: InputDecoration(
+                                hintText: 'Password',
+                                hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white30),
+                                filled: true,
+                                fillColor: const Color(0xFF161427),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                prefixIcon: const Icon(Icons.lock_outlined,
+                                    color: Colors.white54),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                      _obscure
+                                          ? Icons.visibility_off_outlined
+                                          : Icons.visibility_outlined,
+                                      color: Colors.white38),
+                                  onPressed: () => setState(() => _obscure = !_obscure),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: BorderSide(color: Colors.white.withOpacity(0.08)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: const BorderSide(color: Color(0xFF6A1B9A), width: 1.5),
+                                ),
                               ),
                             ),
                           ),
                           const SizedBox(height: 8),
                           Align(
                             alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () =>
-                                  Navigator.pushNamed(context, '/forgot'),
-                              child: Text(
-                                'Forgot Password?',
-                                style: GoogleFonts.plusJakartaSans(
-                                  color: const Color(0xFFB388FF),
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 13,
+                            child: Semantics(
+                              label: 'forgot-password-link',
+                              link: true,
+                              child: TextButton(
+                                key: const Key('forgot-password-link'),
+                                onPressed: () =>
+                                    Navigator.pushNamed(context, '/forgot-password'),
+                                child: Text(
+                                  'Forgot Password?',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: const Color(0xFFB388FF),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13,
+                                  ),
                                 ),
                               ),
                             ),
@@ -282,32 +288,37 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           const SizedBox(height: 12),
 
                           // Login button
-                          SizedBox(
-                            width: double.infinity,
-                            height: 52,
-                            child: ElevatedButton(
-                              onPressed: _loading ? null : _signInEmail,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF6A1B9A),
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                shadowColor: Colors.transparent,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14)),
-                              ),
-                              child: _loading
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                          color: Colors.white, strokeWidth: 2))
-                                  : Text(
-                                      'Sign In',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700,
+                          Semantics(
+                            label: 'login_button',
+                            button: true,
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 52,
+                              child: ElevatedButton(
+                                key: const Key('login-btn'),
+                                onPressed: _loading ? null : _signInEmail,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF6A1B9A),
+                                  foregroundColor: Colors.white,
+                                  elevation: 0,
+                                  shadowColor: Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14)),
+                                ),
+                                child: _loading
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                            color: Colors.white, strokeWidth: 2))
+                                    : Text(
+                                        'Sign In',
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                       ),
-                                    ),
+                              ),
                             ),
                           ),
                         ],
@@ -336,29 +347,34 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const SizedBox(height: 24),
 
                     // Google sign-in
-                    SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: OutlinedButton.icon(
-                        onPressed: _loading ? null : _signInGoogle,
-                        icon: Image.asset(
-                          'assets/images/logo.png', // Fallback stylized Google icon look using app logo or default
-                          width: 20,
-                          height: 20,
-                          errorBuilder: (c, e, s) => const Icon(Icons.login, color: Colors.white),
-                        ),
-                        label: Text(
-                          'Continue with Google',
-                          style: GoogleFonts.plusJakartaSans(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
+                    Semantics(
+                      label: 'google-signin-btn',
+                      button: true,
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: OutlinedButton.icon(
+                          key: const Key('google-signin-btn'),
+                          onPressed: _loading ? null : _signInGoogle,
+                          icon: Image.asset(
+                            'assets/images/logo.png', // Fallback stylized Google icon look using app logo or default
+                            width: 20,
+                            height: 20,
+                            errorBuilder: (c, e, s) => const Icon(Icons.login, color: Colors.white),
                           ),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: Colors.white.withOpacity(0.08)),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14)),
+                          label: Text(
+                            'Continue with Google',
+                            style: GoogleFonts.plusJakartaSans(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: Colors.white.withOpacity(0.08)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14)),
+                          ),
                         ),
                       ),
                     ),
@@ -368,25 +384,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     SizedBox(
                       width: double.infinity,
                       height: 52,
-                      child: ElevatedButton.icon(
-                        onPressed: _loading ? null : _signInGuest,
-                        icon: const Icon(Icons.flash_on_rounded, color: Colors.white, size: 20),
-                        label: Text(
-                          'Instant Guest Access',
-                          style: GoogleFonts.plusJakartaSans(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF283593),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14)),
-                          elevation: 2,
-                          shadowColor: const Color(0xFF283593).withOpacity(0.4),
-                        ),
-                      ),
+                      child: Semantics(
+  label: 'guest_button',
+  child: ElevatedButton.icon(
+    key: const Key('guest-access-btn'),
+    onPressed: _loading ? null : _signInGuest,
+    icon: const Icon(Icons.flash_on_rounded, color: Colors.white, size: 20),
+    label: Text(
+      'Instant Guest Access',
+      style: GoogleFonts.plusJakartaSans(
+        color: Colors.white,
+        fontSize: 15,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+    style: ElevatedButton.styleFrom(
+      backgroundColor: const Color(0xFF283593),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14)
+      ),
+      elevation: 2,
+      shadowColor: const Color(0xFF283593).withOpacity(0.4),
+    ),
+  ),
+),
                     ),
                     const SizedBox(height: 24),
 
@@ -398,14 +419,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           "Don't have an account? ",
                           style: GoogleFonts.plusJakartaSans(color: Colors.white54, fontSize: 14),
                         ),
-                        GestureDetector(
-                          onTap: () => Navigator.pushNamed(context, '/register'),
-                          child: Text(
-                            'Sign Up',
-                            style: GoogleFonts.plusJakartaSans(
-                              color: const Color(0xFFB388FF),
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
+                        Semantics(
+                          label: 'signup-link',
+                          link: true,
+                          child: GestureDetector(
+                            key: const Key('signup-link'),
+                            onTap: () => Navigator.pushNamed(context, '/signup'),
+                            child: Text(
+                              'Sign Up',
+                              style: GoogleFonts.plusJakartaSans(
+                                color: const Color(0xFFB388FF),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                              ),
                             ),
                           ),
                         ),
@@ -428,6 +454,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     TextInputType keyboardType = TextInputType.text,
   }) {
     return TextField(
+      key: const Key('email-input'),
       controller: controller,
       keyboardType: keyboardType,
       style: GoogleFonts.plusJakartaSans(color: Colors.white),

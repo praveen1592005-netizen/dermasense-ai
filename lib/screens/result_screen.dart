@@ -7,6 +7,7 @@ import 'report_screen.dart';
 import '../models/health_score_model.dart';
 import '../services/health_score_service.dart';
 import '../services/firestore_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Data model for skin type recommendations
@@ -66,16 +67,16 @@ const Map<String, SkinTypeData> kSkinTypes = {
       'Thick cream moisturisers',
     ],
     morningRoutine: [
-      '1. Foaming salicylic acid cleanser',
+      '1. Foaming salicylic acid cleanser (CeraVe Renewing SA Cleanser)',
       '2. Alcohol-free toner (witch hazel or niacinamide)',
-      '3. Lightweight gel moisturiser (Neutrogena Hydro Boost)',
-      '4. Oil-free SPF 60 sunscreen',
+      '3. Lightweight gel moisturiser (Neutrogena Hydro Boost Water Gel)',
+      '4. Oil-free SPF 55 sunscreen (Neutrogena Clear Face)',
     ],
     nightRoutine: [
-      '1. Double cleanse: micellar water → gel cleanser',
-      '2. BHA exfoliant 2×/week (Paula\'s Choice 2% BHA)',
-      '3. Niacinamide serum (The Ordinary 10%)',
-      '4. Lightweight gel moisturiser',
+      '1. Double cleanse: micellar water (Garnier) → foaming cleanser',
+      '2. BHA exfoliant 2×/week (Paula\'s Choice 2% BHA or The Ordinary Salicylic 2%)',
+      '3. Niacinamide serum (The Ordinary 10% + Zinc 1%)',
+      '4. Lightweight gel moisturiser (CeraVe PM)',
     ],
     tips: [
       'Blotting papers are your best friend during the day.',
@@ -107,18 +108,18 @@ const Map<String, SkinTypeData> kSkinTypes = {
       'Fragranced products that irritate dry skin',
     ],
     morningRoutine: [
-      '1. Cream or oil cleanser (CeraVe Hydrating Cleanser)',
+      '1. Cream or oil cleanser (CeraVe Hydrating Cleanser or Cetaphil)',
       '2. Hydrating toner (rose water or glycerin mist)',
-      '3. Hyaluronic acid serum on damp skin',
-      '4. Rich ceramide moisturiser',
-      '5. Mineral SPF 30 sunscreen',
+      '3. Hyaluronic acid serum on damp skin (The Ordinary)',
+      '4. Rich ceramide moisturiser (CeraVe Moisturizing Cream)',
+      '5. Mineral SPF 30 sunscreen (CeraVe Hydrating Mineral)',
     ],
     nightRoutine: [
-      '1. Balm cleanser to dissolve impurities gently',
+      '1. Balm cleanser to dissolve impurities gently (e.g. e.l.f. Holy Hydration)',
       '2. Hydrating essence or toner',
       '3. Hyaluronic acid + ceramide serum',
-      '4. Rich night cream (La Mer, CeraVe PM)',
-      '5. Facial oil to seal (rosehip or marula)',
+      '4. Rich night cream (CeraVe PM or Cetaphil Rich Hydrating Cream)',
+      '5. Facial oil to seal (rosehip or squalane)',
     ],
     tips: [
       'Apply moisturiser on slightly damp skin for 2× absorption.',
@@ -151,17 +152,17 @@ const Map<String, SkinTypeData> kSkinTypes = {
       'Alcohol-based products',
     ],
     morningRoutine: [
-      '1. Gentle non-foaming cleanser (La Roche-Posay Toleriane)',
+      '1. Gentle non-foaming cleanser (Vanicream Gentle Facial Cleanser)',
       '2. Calming toner with Cica or oat extract',
-      '3. Centella serum (COSRX Centella Water)',
-      '4. Fragrance-free, hypoallergenic moisturiser',
-      '5. Mineral SPF 41 sunscreen',
+      '3. Centella or oat serum (Aveeno Calm + Restore)',
+      '4. Fragrance-free, hypoallergenic moisturiser (CeraVe or Cetaphil)',
+      '5. Mineral SPF 30+ sunscreen (Blue Lizard or CeraVe)',
     ],
     nightRoutine: [
       '1. Micellar water then gentle cream cleanser',
       '2. Calming essence (avoid acids)',
       '3. Recovery serum with Allantoin or Cica',
-      '4. Barrier-repair cream (Avène Cicalfate)',
+      '4. Barrier-repair cream (La Roche-Posay Cicaplast Baume B5)',
       '5. Sleeping mask 2×/week for extra relief',
     ],
     tips: [
@@ -194,23 +195,63 @@ const Map<String, SkinTypeData> kSkinTypes = {
       'Skipping moisturiser on oily areas',
     ],
     morningRoutine: [
-      '1. Gentle gel-cream cleanser for mixed skin',
+      '1. Gentle gel-cream cleanser (Cetaphil Daily Facial Cleanser)',
       '2. Balancing toner (green tea or niacinamide)',
-      '3. Lightweight gel moisturiser over whole face',
-      '4. Richer cream only on cheeks/dry zones',
-      '5. Ultra-light SPF 50+ across whole face',
+      '3. Lightweight gel moisturiser over whole face (Versed Dew Point)',
+      '4. Richer cream only on dry cheeks if needed',
+      '5. Ultra-light SPF 50+ across whole face (Neutrogena Clear Face)',
     ],
     nightRoutine: [
       '1. Double cleanse (T-zone focus for oil)',
       '2. BHA toner on oily zones only (2× per week)',
-      '3. Niacinamide serum all over',
-      '4. Gel moisturiser on T-zone; rich cream on dry zones',
+      '3. Niacinamide serum all over (The Ordinary 10%)',
+      '4. Gel moisturiser on T-zone; CeraVe cream on dry zones',
       '5. Spot-treat blemishes with salicylic gel if needed',
     ],
     tips: [
       'Zone moisturise: lighter on T-zone, richer on cheeks.',
       'Apply clay mask only on forehead, nose & chin — not cheeks.',
       'Micellar water is perfect as a first cleanse for combination skin.',
+    ],
+  ),
+  'Normal': SkinTypeData(
+    type: 'Normal',
+    emoji: '⚖️',
+    tagline: 'Balanced, smooth & low maintenance',
+    color: Color(0xFF8D6E63),
+    colorDark: Color(0xFF4E342E),
+    icon: Icons.balance_rounded,
+    sunscreens: [
+      '🥇 Trader Joe\'s Daily Facial Sunscreen SPF 40 – Invisible gel, highly affordable',
+      '🥈 CeraVe Ultra-Light Moisturizing Lotion SPF 30 – Matte finish, contains ceramides',
+      '🥉 Neutrogena Hydro Boost Water Gel Lotion SPF 50 – Hydrating without greasiness',
+    ],
+    keyIngredients: [
+      'Vitamin C – Brightens and protects against environmental damage',
+      'Hyaluronic Acid – Keeps skin plump and hydrated',
+      'Ceramides – Maintains a healthy skin barrier',
+      'Peptides – Supports collagen production for long-term health',
+    ],
+    avoid: [
+      'Over-exfoliating (stick to 1-2 times a week)',
+      'Harsh soaps that can strip the natural balance',
+      'Changing products too frequently',
+    ],
+    morningRoutine: [
+      '1. Gentle hydrating cleanser (CeraVe Hydrating or Cetaphil)',
+      '2. Vitamin C serum for antioxidant protection',
+      '3. Lightweight daily moisturiser',
+      '4. Broad-spectrum SPF 30+ sunscreen',
+    ],
+    nightRoutine: [
+      '1. Gentle cleanser to remove SPF and dirt',
+      '2. Basic hydrating serum (The Ordinary Hyaluronic Acid)',
+      '3. Nourishing night cream (CeraVe PM)',
+    ],
+    tips: [
+      'Your skin is naturally balanced, so keep your routine simple!',
+      'Focus on prevention (SPF and antioxidants) rather than correction.',
+      'A chemical exfoliant (AHA/BHA) once a week keeps texture smooth.',
     ],
   ),
 };
@@ -245,11 +286,8 @@ class _ResultScreenState extends ConsumerState<ResultScreen>
     _fadeIn = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
     _ctrl.forward();
 
-    // Auto-show the skin type picker after a short delay
+    // Check for emergency alerts (Melanoma)
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(const Duration(milliseconds: 900), () {
-        if (mounted) _showSkinTypeSheet();
-      });
       _checkEmergency();
     });
   }
@@ -337,9 +375,20 @@ class _ResultScreenState extends ConsumerState<ResultScreen>
     final risk = r['risk'] as String? ?? 'Unknown';
     final explanation = r['explanation'] as String? ?? '';
     final treatment = r['treatment'] as String? ?? '';
-    final skincare = (r['skincare'] as List?)?.cast<String>() ?? [];
+    final skincare = ((r['skincare'] as List?) ?? []).map((e) => e.toString()).toList();
     final urgency = r['urgency'] as String? ?? '';
     final needsDoctor = r['needsDoctor'] as bool? ?? false;
+    final affectedArea = r['affected_area'] as String? ?? 'Not specified';
+    final isContagious = r['contagious'] as bool? ?? false;
+    final symptoms = ((r['symptoms'] as List?) ?? []).map((e) => e.toString()).toList();
+    // Hybrid fields
+    final top5 = ((r['top5'] as List?) ?? []).map((e) => Map<String, dynamic>.from(e as Map)).toList();
+    final cancerRiskScore = (r['cancer_risk_score'] as num?)?.toDouble() ?? 0.0;
+    final cancerRiskLevel = r['cancer_risk_level'] as String? ?? 'Low';
+    final urgentConsultation = r['urgent_consultation'] as bool? ?? false;
+    final precautions = ((r['precautions'] as List?) ?? []).map((e) => e.toString()).toList();
+    final modelUsed = r['model_used'] as String? ?? 'gemini';
+    final isHybrid = r['is_hybrid'] as bool? ?? false;
 
     Color confidenceColor;
     if (confidence >= 0.85) {
@@ -458,8 +507,44 @@ class _ResultScreenState extends ConsumerState<ResultScreen>
                   children: [
                     // Disease card
                     _diseaseCard(
-                        disease, confidence, severity, risk, confidenceColor),
+                        disease, confidence, severity, risk, confidenceColor, affectedArea, isContagious),
                     const SizedBox(height: 16),
+
+                    if (symptoms.isNotEmpty) ...[
+                      _section(
+                        icon: Icons.healing_rounded,
+                        title: 'Expected Symptoms',
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: symptoms.map((s) => Chip(
+                            label: Text(s, style: const TextStyle(color: Colors.white, fontSize: 13)),
+                            backgroundColor: Colors.white.withOpacity(0.1),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                            side: BorderSide.none,
+                          )).toList(),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
+                    // ── Cancer Risk Meter (Hybrid only) ──────────────────
+                    if (isHybrid || cancerRiskScore > 0) ...[
+                      _cancerRiskMeter(cancerRiskScore, cancerRiskLevel),
+                      const SizedBox(height: 16),
+                    ],
+
+                    // ── Urgent Melanoma Warning ───────────────────────────
+                    if (urgentConsultation) ...[
+                      _urgentMelanomaWarning(),
+                      const SizedBox(height: 16),
+                    ],
+
+                    // ── Top-5 Predictions (Hybrid only) ──────────────────
+                    if (top5.isNotEmpty) ...[
+                      _top5PredictionsCard(top5, modelUsed),
+                      const SizedBox(height: 16),
+                    ],
 
                     // Explanation
                     _section(
@@ -480,6 +565,40 @@ class _ResultScreenState extends ConsumerState<ResultScreen>
                               color: Colors.white70, height: 1.8, fontSize: 14)),
                     ),
                     const SizedBox(height: 16),
+
+                    // Precautions (Hybrid)
+                    if (precautions.isNotEmpty) ...[
+                      _section(
+                        icon: Icons.shield_outlined,
+                        title: 'Precautions',
+                        child: Column(
+                          children: precautions.asMap().entries.map((entry) =>
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    width: 24, height: 24,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: Colors.orangeAccent.withOpacity(0.15),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text('${entry.key + 1}',
+                                        style: const TextStyle(color: Colors.orangeAccent, fontSize: 11, fontWeight: FontWeight.bold)),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(child: Text(entry.value,
+                                      style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.5))),
+                                ],
+                              ),
+                            )
+                          ).toList(),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
 
                     // Skincare routine from backend
                     if (skincare.isNotEmpty) ...[
@@ -602,6 +721,31 @@ class _ResultScreenState extends ConsumerState<ResultScreen>
                         ),
                       ],
                     ),
+                    if (needsDoctor) ...[
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            final uri = Uri.parse('geo:0,0?q=dermatologist+near+me');
+                            if (await canLaunchUrl(uri)) {
+                              await launchUrl(uri);
+                            } else {
+                              final webUri = Uri.parse('https://www.google.com/maps/search/dermatologist+near+me');
+                              await launchUrl(webUri, mode: LaunchMode.externalApplication);
+                            }
+                          },
+                          icon: const Icon(Icons.location_on),
+                          label: const Text('Find Nearby Dermatologist', style: TextStyle(fontWeight: FontWeight.bold)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.redAccent,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.all(16),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 12),
 
                     // ── Generate PDF Report ────────────────────────────────
@@ -1079,7 +1223,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen>
   }
 
   Widget _diseaseCard(String disease, double confidence, String severity,
-      String risk, Color confColor) {
+      String risk, Color confColor, String affectedArea, bool isContagious) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -1100,8 +1244,23 @@ class _ResultScreenState extends ConsumerState<ResultScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Detected Condition',
-              style: TextStyle(color: Colors.white60, fontSize: 13)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Detected Condition',
+                  style: TextStyle(color: Colors.white60, fontSize: 13)),
+              if (isContagious)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.redAccent.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.redAccent),
+                  ),
+                  child: const Text('Contagious', style: TextStyle(color: Colors.redAccent, fontSize: 11, fontWeight: FontWeight.bold)),
+                ),
+            ],
+          ),
           const SizedBox(height: 4),
           Text(disease,
               style: const TextStyle(
@@ -1111,6 +1270,8 @@ class _ResultScreenState extends ConsumerState<ResultScreen>
           const SizedBox(height: 16),
           Row(
             children: [
+              _badge('Area', affectedArea),
+              const SizedBox(width: 10),
               _badge('Severity', severity),
               const SizedBox(width: 10),
               _badge('Risk Level', risk),
@@ -1197,6 +1358,139 @@ class _ResultScreenState extends ConsumerState<ResultScreen>
           ),
           const Divider(color: Colors.white10, height: 20),
           child,
+        ],
+      ),
+    );
+  }
+
+  // ── Hybrid UI Widgets ───────────────────────────────────────────────────
+
+  Widget _cancerRiskMeter(double score, String level) {
+    final double percentage = (score / 100.0).clamp(0.0, 1.0);
+    Color meterColor;
+    if (percentage >= 0.70) {
+      meterColor = Colors.redAccent;
+    } else if (percentage >= 0.40) {
+      meterColor = Colors.orangeAccent;
+    } else {
+      meterColor = Colors.greenAccent;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: meterColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: meterColor.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.monitor_heart_outlined, color: meterColor, size: 20),
+                  const SizedBox(width: 8),
+                  const Text('Cancer Risk Level', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                ],
+              ),
+              Text(level, style: TextStyle(color: meterColor, fontWeight: FontWeight.bold, fontSize: 14)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: percentage,
+              minHeight: 12,
+              backgroundColor: Colors.white12,
+              valueColor: AlwaysStoppedAnimation<Color>(meterColor),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text('${score.toStringAsFixed(1)}% probability', style: const TextStyle(color: Colors.white54, fontSize: 12)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _urgentMelanomaWarning() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.red.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.redAccent, width: 2),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 28),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text('URGENT WARNING', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 15, letterSpacing: 0.5)),
+                SizedBox(height: 4),
+                Text('High risk of Melanoma or severe skin cancer detected. You must schedule an urgent appointment with a board-certified dermatologist immediately.',
+                    style: TextStyle(color: Colors.white, height: 1.5, fontSize: 13)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _top5PredictionsCard(List<Map<String, dynamic>> top5, String modelUsed) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.white.withOpacity(0.08)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.psychology_alt_outlined, color: Colors.cyanAccent, size: 20),
+              const SizedBox(width: 8),
+              const Text('AI Top-5 Predictions', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+              const Spacer(),
+              Text(modelUsed, style: const TextStyle(color: Colors.white38, fontSize: 10)),
+            ],
+          ),
+          const Divider(color: Colors.white10, height: 20),
+          ...top5.map((p) {
+            final conf = (p['confidence'] as num?)?.toDouble() ?? 0.0;
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Row(
+                children: [
+                  Container(
+                    width: 20, height: 20,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Colors.white10,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text('${p['rank']}', style: const TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold)),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(child: Text(p['disease'], style: const TextStyle(color: Colors.white, fontSize: 13))),
+                  Text('${(conf * 100).toStringAsFixed(1)}%', style: const TextStyle(color: Colors.cyanAccent, fontSize: 13, fontWeight: FontWeight.bold)),
+                ],
+              ),
+            );
+          }).toList(),
         ],
       ),
     );

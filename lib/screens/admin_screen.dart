@@ -281,33 +281,7 @@ class _AdminBody extends StatelessWidget {
 
           const SizedBox(height: 24),
 
-          // ── Actions ────────────────────────────────────────────────────────
-          _sectionHeader('Admin Actions'),
-          const SizedBox(height: 12),
-          _adminActionTile(
-            Icons.file_download_rounded,
-            'Export Data (CSV)',
-            'Download all scan statistics',
-            const Color(0xFF00695C),
-            () => _showComingSoon(context),
-          ),
-          const SizedBox(height: 10),
-          _adminActionTile(
-            Icons.notifications_active_rounded,
-            'Push Notifications',
-            'Send alerts to all users',
-            const Color(0xFF6A1B9A),
-            () => _showComingSoon(context),
-          ),
-          const SizedBox(height: 10),
-          _adminActionTile(
-            Icons.manage_accounts_rounded,
-            'Manage Users',
-            'View and manage user accounts',
-            const Color(0xFF283593),
-            () => _showComingSoon(context),
-          ),
-          const SizedBox(height: 30),
+
         ],
       ),
     );

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /telemedicine
+
+Sitemap: https://dermasense-ai-18698.web.app/sitemap.xml

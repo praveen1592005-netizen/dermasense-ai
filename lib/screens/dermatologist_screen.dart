@@ -1,3 +1,4 @@
+
 // lib/screens/dermatologist_screen.dart
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -149,8 +150,27 @@ class _DermatologistScreenState extends ConsumerState<DermatologistScreen> {
     final encoded = Uri.encodeComponent(address);
     final uri = Uri.parse(
         'https://www.google.com/maps/search/?api=1&query=$encoded');
-    if (await canLaunchUrl(uri)) {
+    try {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      // fallback
+      await launchUrl(
+        Uri.parse('https://maps.google.com/?q=$encoded'),
+        mode: LaunchMode.externalApplication,
+      );
+    }
+  }
+
+  Future<void> _bookAppointment(String doctorName) async {
+    final query = Uri.encodeComponent('$doctorName Chennai');
+    final uri = Uri.parse('https://www.practo.com/search/doctors?results_type=doctor&q=$query&city=Chennai');
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      await launchUrl(
+        Uri.parse('https://www.practo.com/'),
+        mode: LaunchMode.externalApplication,
+      );
     }
   }
 
@@ -297,6 +317,7 @@ class _DermatologistScreenState extends ConsumerState<DermatologistScreen> {
                           doctor: _filtered[i],
                           onCall: _call,
                           onDirections: _directions,
+                          onBook: _bookAppointment,
                         ),
                   ),
           ),
@@ -336,11 +357,13 @@ class _DoctorCard extends StatelessWidget {
   final DermatologistModel doctor;
   final void Function(String) onCall;
   final void Function(String) onDirections;
+  final void Function(String) onBook;
 
   const _DoctorCard({
     required this.doctor,
     required this.onCall,
     required this.onDirections,
+    required this.onBook,
   });
 
   @override
@@ -544,15 +567,7 @@ class _DoctorCard extends StatelessWidget {
                         label: 'Book',
                         color: Colors.blueAccent,
                         bgColor: Colors.blue.withOpacity(0.15),
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                  'Online booking coming soon!'),
-                              backgroundColor: Color(0xFF6A1B9A),
-                            ),
-                          );
-                        },
+                        onTap: () => onBook(doctor.name),
                       ),
                     ),
                   ],

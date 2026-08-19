@@ -1,16 +1,32 @@
 // lib/screens/skincare_screen.dart
+import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import '../services/api_service.dart';
+import '../services/theme_service.dart';
 
 /// Riverpod provider to store the last prediction result from a scan.
 /// Accessible from both ScanScreen (writer) and SkincareScreen (reader).
 final lastScanResultProvider =
     StateProvider<Map<String, dynamic>?>((ref) => null);
 
-class SkincareScreen extends ConsumerWidget {
+// Providers for the skincare-specific analysis
+final _skincareAnalysisProvider =
+    StateProvider<Map<String, dynamic>?>((ref) => null);
+final _skincareLoadingProvider = StateProvider<bool>((ref) => false);
+final _skincareImageBytesProvider = StateProvider<List<int>?>((ref) => null);
+
+class SkincareScreen extends ConsumerStatefulWidget {
   const SkincareScreen({Key? key}) : super(key: key);
 
-  // --- Generic (non-scan) daily skincare tips shown at the top always ---
+  @override
+  ConsumerState<SkincareScreen> createState() => _SkincareScreenState();
+}
+
+class _SkincareScreenState extends ConsumerState<SkincareScreen> {
   static const List<Map<String, dynamic>> _genericTips = [
     {
       'title': 'Morning Cleanse',
@@ -50,119 +66,215 @@ class SkincareScreen extends ConsumerWidget {
     },
   ];
 
-  // --- Medicine guidelines per disease ---
-  static const Map<String, List<Map<String, String>>> _medicineMap = {
-    'Melanocytic Nevi': [
-      {'name': 'No medication needed', 'use': 'Monitor monthly using the ABCDE rule.', 'icon': '💊'},
-      {'name': 'SPF 50+ Sunscreen', 'use': 'Apply every morning to reduce UV damage.', 'icon': '🧴'},
-    ],
-    'Melanoma': [
-      {'name': '⚠️ Urgent Dermatologist Visit', 'use': 'Clinical biopsy and staging required immediately.', 'icon': '🏥'},
-      {'name': 'Imiquimod Cream (Rx)', 'use': 'Topical immunotherapy if prescribed.', 'icon': '💊'},
-      {'name': 'SPF 50+ Sunscreen', 'use': 'Apply daily; avoid sun on affected area.', 'icon': '🧴'},
-    ],
-    'Actinic Keratosis': [
-      {'name': 'Fluorouracil Cream (Rx)', 'use': 'Topical chemo cream applied for 2–4 weeks as directed.', 'icon': '💊'},
-      {'name': 'Diclofenac Gel (Rx)', 'use': 'Anti-inflammatory topical for mild cases.', 'icon': '💊'},
-      {'name': 'SPF 30+ Sunscreen', 'use': 'Essential daily to prevent worsening.', 'icon': '🧴'},
-      {'name': 'Gentle Exfoliant', 'use': 'Weekly AHA exfoliant to manage scaling.', 'icon': '🧴'},
-    ],
-    'Basal Cell Carcinoma': [
-      {'name': 'Vismodegib (Rx)', 'use': 'Systemic therapy for advanced cases — dermatologist only.', 'icon': '💊'},
-      {'name': 'Imiquimod Cream (Rx)', 'use': 'Topical option for superficial BCC.', 'icon': '💊'},
-      {'name': 'Mineral Sunscreen SPF 30+', 'use': 'Daily protection to prevent further damage.', 'icon': '🧴'},
-    ],
-    'Benign Keratosis': [
-      {'name': 'No medication needed', 'use': 'Cosmetic removal only if desired (cryotherapy).', 'icon': '💊'},
-      {'name': 'Urea Cream 10–20%', 'use': 'Softens and hydrates scaly patches.', 'icon': '🧴'},
-      {'name': 'Gentle Moisturizer', 'use': 'Apply twice daily to prevent dryness.', 'icon': '🧴'},
-    ],
-    'Dermatofibroma': [
-      {'name': 'No medication needed', 'use': 'Safe to leave untreated; monitor for growth.', 'icon': '💊'},
-      {'name': 'Hydrating Moisturizer', 'use': 'Keep skin around nodule hydrated.', 'icon': '🧴'},
-    ],
-    'Vascular Lesion': [
-      {'name': 'No medication needed', 'use': 'No treatment unless cosmetic removal is desired.', 'icon': '💊'},
-      {'name': 'Gentle Cleanser', 'use': 'Use a non-abrasive cleanser around the lesion.', 'icon': '🧴'},
-      {'name': 'SPF 30+ Sunscreen', 'use': 'Protect skin from sun exposure.', 'icon': '🧴'},
-    ],
+  static const Map<String, Color> _conditionColors = {
+    'Clear Skin': Color(0xFF66BB6A),
+    'Acne & Pimples': Color(0xFFEF5350),
+    'Post-Acne Marks & Scars': Color(0xFFFF7043),
+    'Hyperpigmentation & Dark Spots': Color(0xFFFFA726),
+    'Oily Skin': Color(0xFF42A5F5),
+    'Dry & Dehydrated Skin': Color(0xFF26C6DA),
+    'Combination Skin': Color(0xFF7E57C2),
+    'Wrinkles & Fine Lines': Color(0xFFEC407A),
+    'Redness & Sensitivity': Color(0xFFEF5350),
+    'Dull & Uneven Skin Tone': Color(0xFFFFA726),
   };
 
+  void _showNoSkinDialog() {
+    final themeMode = ref.read(themeProvider);
+    final isDark = themeMode == ThemeMode.dark;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF2A2A3B) : Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            const Icon(Icons.warning_amber_rounded, color: Colors.amber, size: 28),
+            const SizedBox(width: 10),
+            Text('No Skin Detected',
+                style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black87,
+                    fontSize: 18)),
+          ],
+        ),
+        content: Text(
+          'We couldn\'t detect human skin or a face in the image.\n\nPlease upload a clear photo of your face or skin for an accurate skincare analysis.',
+          style: TextStyle(
+              color: isDark ? Colors.white70 : Colors.black54,
+              fontSize: 14,
+              height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ref.read(_skincareImageBytesProvider.notifier).state = null;
+              ref.read(_skincareAnalysisProvider.notifier).state = null;
+            },
+            child: const Text('Try Again',
+                style: TextStyle(
+                    color: Colors.amber, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _pickAndAnalyse(BuildContext context, WidgetRef ref) async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+      maxWidth: 1024,
+    );
+    if (picked == null) return;
+
+    final bytes = await picked.readAsBytes();
+    ref.read(_skincareImageBytesProvider.notifier).state = bytes;
+    ref.read(_skincareAnalysisProvider.notifier).state = null;
+    ref.read(_skincareLoadingProvider.notifier).state = true;
+
+    try {
+      final base64Img = base64Encode(bytes);
+      final apiClient = ref.read(apiClientProvider);
+      final result = await apiClient.skincareAnalyze(base64Img);
+      ref.read(_skincareAnalysisProvider.notifier).state = result;
+    } catch (e) {
+      if (!mounted) return;
+      if (e.toString().contains('NO_SKIN')) {
+        ref.read(_skincareLoadingProvider.notifier).state = false;
+        _showNoSkinDialog();
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Analysis failed: $e'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    } finally {
+      ref.read(_skincareLoadingProvider.notifier).state = false;
+    }
+  }
+
+  Future<void> _takeAndAnalyse(BuildContext context, WidgetRef ref) async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 85,
+      maxWidth: 1024,
+    );
+    if (picked == null) return;
+
+    final bytes = await picked.readAsBytes();
+    ref.read(_skincareImageBytesProvider.notifier).state = bytes;
+    ref.read(_skincareAnalysisProvider.notifier).state = null;
+    ref.read(_skincareLoadingProvider.notifier).state = true;
+
+    try {
+      final base64Img = base64Encode(bytes);
+      final apiClient = ref.read(apiClientProvider);
+      final result = await apiClient.skincareAnalyze(base64Img);
+      ref.read(_skincareAnalysisProvider.notifier).state = result;
+    } catch (e) {
+      if (!mounted) return;
+      if (e.toString().contains('NO_SKIN')) {
+        ref.read(_skincareLoadingProvider.notifier).state = false;
+        _showNoSkinDialog();
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Analysis failed: $e'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    } finally {
+      ref.read(_skincareLoadingProvider.notifier).state = false;
+    }
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final lastResult = ref.watch(lastScanResultProvider);
-    final hasResult = lastResult != null;
-    final disease = hasResult ? (lastResult['disease'] as String? ?? '') : '';
-    final skincare = hasResult
-        ? (lastResult['skincare'] as List?)?.cast<String>() ?? []
-        : <String>[];
-    final medicines = hasResult ? (_medicineMap[disease] ?? []) : <Map<String, String>>[];
-    final confidence = hasResult ? (lastResult['confidence'] as num?)?.toDouble() ?? 0.0 : 0.0;
-    final urgency = hasResult ? (lastResult['urgency'] as String? ?? '') : '';
-    final needsDoctor = hasResult ? (lastResult['needsDoctor'] as bool? ?? false) : false;
+  Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeProvider);
+    final isDark = themeMode == ThemeMode.dark;
+    final analysis = ref.watch(_skincareAnalysisProvider);
+    final isLoading = ref.watch(_skincareLoadingProvider);
+    final imageBytes = ref.watch(_skincareImageBytesProvider);
+
+    final bgColor = isDark ? const Color(0xFF1E1E2F) : const Color(0xFFF5F6FA);
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final subtextColor = isDark ? Colors.white54 : Colors.black54;
+    final cardColor = isDark ? Colors.white.withOpacity(0.05) : Colors.white;
+    final cardBorder = isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.06);
+
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1E1E2F),
+      backgroundColor: bgColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          icon: Icon(Icons.arrow_back_ios, color: textColor),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Skincare & Medicines',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        title: Text(
+          'Skincare Analysis',
+          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.camera_alt_rounded, color: Color(0xFF8E24AA)),
-            tooltip: 'Scan Skin',
-            onPressed: () => Navigator.pushNamed(context, '/scan'),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ---- Scan Banner ----
-            if (!hasResult) ...[
-              _scanPromptBanner(context),
-              const SizedBox(height: 20),
-            ],
+            // ── Image Upload Section ──────────────────────────────────────
+            _buildUploadSection(context, ref, imageBytes, isLoading),
+            const SizedBox(height: 20),
 
-            // ---- Personalized section (shown only after scan) ----
-            if (hasResult) ...[
-              _sectionHeader('🎯 Personalized for You'),
-              const SizedBox(height: 10),
-              _diagnosisCard(disease, confidence, needsDoctor, urgency),
+            // ── AI Analysis Result ────────────────────────────────────────
+            if (isLoading) _buildLoadingCard(),
+            if (!isLoading && analysis != null) ...[
+              _buildConditionCard(analysis),
               const SizedBox(height: 16),
-
-              if (medicines.isNotEmpty) ...[
-                _sectionHeader('💊 Recommended Medicines'),
-                const SizedBox(height: 10),
-                ...medicines.map((m) => _medicineCard(m)).toList(),
-                const SizedBox(height: 16),
-              ],
-
-              if (skincare.isNotEmpty) ...[
-                _sectionHeader('🧴 Your Skincare Routine'),
-                const SizedBox(height: 10),
-                _skincareRoutineCard(skincare),
-                const SizedBox(height: 20),
-              ],
-
+              _buildVitalsCard(analysis),
+              const SizedBox(height: 16),
+              _buildObservationCard(analysis),
+              const SizedBox(height: 16),
+              _buildRoutineCard('☀️ Morning Routine',
+                  (analysis['morning_routine'] as List<dynamic>? ?? [])
+                      .map((e) => e.toString())
+                      .toList(),
+                  const Color(0xFFFFA726)),
+              const SizedBox(height: 12),
+              _buildRoutineCard('🌙 Night Routine',
+                  (analysis['night_routine'] as List<dynamic>? ?? [])
+                      .map((e) => e.toString())
+                      .toList(),
+                  const Color(0xFF7E57C2)),
+              const SizedBox(height: 16),
+              _buildIngredientsCard(
+                  (analysis['key_ingredients'] as List<dynamic>? ?? [])
+                      .map((e) => e.toString())
+                      .toList()),
+              const SizedBox(height: 12),
+              _buildAvoidCard(
+                  (analysis['avoid'] as List<dynamic>? ?? [])
+                      .map((e) => e.toString())
+                      .toList()),
+              const SizedBox(height: 12),
+              if ((analysis['tip'] as String? ?? '').isNotEmpty)
+                _buildTipCard(analysis['tip'] as String),
+              const SizedBox(height: 20),
               const Divider(color: Colors.white12, height: 32),
             ],
 
-            // ---- Generic daily tips (always shown) ----
-            _sectionHeader('📋 Daily Skincare Tips'),
+            // ── Daily Tips (always shown) ─────────────────────────────────
+            _sectionHeader('📋 Daily Skincare Tips', textColor),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Good habits for everyone — every single day.',
-              style: TextStyle(color: Colors.white38, fontSize: 12),
+              style: TextStyle(color: subtextColor, fontSize: 12),
             ),
             const SizedBox(height: 12),
             GridView.builder(
@@ -175,20 +287,20 @@ class SkincareScreen extends ConsumerWidget {
                 childAspectRatio: 1.15,
               ),
               itemCount: _genericTips.length,
-              itemBuilder: (_, i) => _tipCard(_genericTips[i]),
+              itemBuilder: (_, i) => _tipCard(_genericTips[i], textColor, subtextColor, cardColor, cardBorder),
             ),
             const SizedBox(height: 20),
 
-            // ---- Disclaimer ----
+            // ── Disclaimer ────────────────────────────────────────────────
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.04),
+                color: isDark ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.04),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Text(
-                '⚠️ Disclaimer: All skincare and medicine recommendations are for informational purposes only. Always consult a qualified dermatologist before starting any treatment.',
-                style: TextStyle(color: Colors.white38, fontSize: 12, height: 1.5),
+              child: Text(
+                '⚠️ Disclaimer: All skincare recommendations are for informational purposes only. Always consult a qualified dermatologist before starting any treatment.',
+                style: TextStyle(color: subtextColor, fontSize: 12, height: 1.5),
               ),
             ),
             const SizedBox(height: 30),
@@ -198,152 +310,270 @@ class SkincareScreen extends ConsumerWidget {
     );
   }
 
-  // ---- Widgets ----
+  // ── Upload Section ────────────────────────────────────────────────────────
 
-  Widget _scanPromptBanner(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, '/scan'),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(22),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF6A1B9A), Color(0xFF283593)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(22),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF6A1B9A).withOpacity(0.4),
-              blurRadius: 18,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    'Scan Your Skin First',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    'Take or upload a photo of your skin to get personalized medicine and skincare recommendations.',
-                    style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.5),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 30),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _diagnosisCard(String disease, double confidence, bool needsDoctor, String urgency) {
+  Widget _buildUploadSection(
+    BuildContext context,
+    WidgetRef ref,
+    List<int>? imageBytes,
+    bool isLoading,
+  ) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.06),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: needsDoctor
-              ? Colors.redAccent.withOpacity(0.4)
-              : Colors.greenAccent.withOpacity(0.3),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF6A1B9A), Color(0xFF283593)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF6A1B9A).withOpacity(0.4),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(
-                needsDoctor ? Icons.local_hospital_rounded : Icons.check_circle_outline,
-                color: needsDoctor ? Colors.redAccent : Colors.greenAccent,
-                size: 22,
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  disease,
-                  style: const TextStyle(
-                      color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '${(confidence * 100).toStringAsFixed(0)}%',
-                  style: const TextStyle(
-                      color: Colors.greenAccent, fontWeight: FontWeight.bold, fontSize: 13),
-                ),
-              ),
-            ],
-          ),
-          if (urgency.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            Text(
-              urgency,
-              style: TextStyle(
-                color: needsDoctor ? Colors.redAccent.shade100 : Colors.white60,
-                fontSize: 13,
-                height: 1.4,
+          // Uploaded image preview
+          if (imageBytes != null)
+            ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(24)),
+              child: Image.memory(
+                imageBytes as dynamic,
+                width: double.infinity,
+                height: 220,
+                fit: BoxFit.cover,
               ),
             ),
-          ],
+
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                if (imageBytes == null) ...[
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.face_retouching_natural,
+                      color: Colors.white,
+                      size: 42,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  const Text(
+                    'Analyse Your Skin',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Upload a clear photo of your face.\nOur AI will detect pimples, marks, dark spots\nand create your personalised skincare routine.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.white70, fontSize: 13, height: 1.6),
+                  ),
+                  const SizedBox(height: 18),
+                ],
+                if (imageBytes != null) ...[
+                  const Text(
+                    'Analyse a different photo',
+                    style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 10),
+                ],
+
+                // Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: _actionButton(
+                        icon: Icons.photo_library_rounded,
+                        label: 'Upload Photo',
+                        onTap: isLoading
+                            ? null
+                            : () => _pickAndAnalyse(context, ref),
+                      ),
+                    ),
+                    if (!kIsWeb) ...[
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _actionButton(
+                          icon: Icons.camera_alt_rounded,
+                          label: 'Take Photo',
+                          onTap: isLoading
+                              ? null
+                              : () => _takeAndAnalyse(context, ref),
+                          outlined: true,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _medicineCard(Map<String, String> medicine) {
+  Widget _actionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback? onTap,
+    bool outlined = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 13),
+        decoration: BoxDecoration(
+          color: outlined ? Colors.transparent : Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: outlined
+              ? Border.all(color: Colors.white54, width: 1.5)
+              : null,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon,
+                size: 18,
+                color: outlined ? Colors.white : const Color(0xFF6A1B9A)),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                  color: outlined ? Colors.white : const Color(0xFF6A1B9A),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Loading Card ──────────────────────────────────────────────────────────
+
+  Widget _buildLoadingCard() {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
+      width: double.infinity,
+      padding: const EdgeInsets.all(30),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.06),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFF6A1B9A).withOpacity(0.3)),
+      ),
+      child: const Column(
+        children: [
+          SizedBox(
+            width: 48,
+            height: 48,
+            child: CircularProgressIndicator(
+              color: Color(0xFF8E24AA),
+              strokeWidth: 3,
+            ),
+          ),
+          SizedBox(height: 16),
+          Text(
+            '🤖 AI Analysing Your Skin...',
+            style: TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          SizedBox(height: 6),
+          Text(
+            'Detecting pimples, marks, dark spots\nand preparing your personalised routine',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white54, fontSize: 13, height: 1.5),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Result Cards ──────────────────────────────────────────────────────────
+
+  Widget _buildConditionCard(Map<String, dynamic> analysis) {
+    final condition = analysis['condition'] as String? ?? 'Unknown';
+    final confidence =
+        ((analysis['confidence'] as num?)?.toDouble() ?? 0.0) * 100;
+    final conditionColor =
+        _conditionColors[condition] ?? const Color(0xFF8E24AA);
+    final isClear = condition == 'Clear Skin';
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: conditionColor.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: conditionColor.withOpacity(0.4), width: 1.5),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(medicine['icon'] ?? '💊', style: const TextStyle(fontSize: 24)),
-          const SizedBox(width: 12),
+          Container(
+            width: 54,
+            height: 54,
+            decoration: BoxDecoration(
+              color: conditionColor.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              isClear
+                  ? Icons.check_circle_rounded
+                  : Icons.face_retouching_natural,
+              color: conditionColor,
+              size: 28,
+            ),
+          ),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  medicine['name'] ?? '',
-                  style: const TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                  condition,
+                  style: TextStyle(
+                      color: conditionColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  medicine['use'] ?? '',
-                  style: const TextStyle(color: Colors.white60, fontSize: 13, height: 1.4),
+                Row(
+                  children: [
+                    Text(
+                      '${confidence.toStringAsFixed(0)}% confidence',
+                      style: const TextStyle(
+                          color: Colors.white60, fontSize: 13),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: confidence / 100,
+                          backgroundColor: Colors.white12,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(conditionColor),
+                          minHeight: 6,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -353,62 +583,280 @@ class SkincareScreen extends ConsumerWidget {
     );
   }
 
-  Widget _skincareRoutineCard(List<String> steps) {
+  Widget _buildVitalsCard(Map<String, dynamic> analysis) {
+    final skinType = analysis['skin_type_detected'] as String? ?? 'Unknown';
+    final hydration = analysis['hydration_level'] as String? ?? 'Unknown';
+    final isDark = ref.read(themeProvider) == ThemeMode.dark;
+
+    if (skinType == 'Unknown' && hydration == 'Unknown') {
+      return const SizedBox.shrink();
+    }
+
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF4FC3F7).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFF4FC3F7).withOpacity(0.3)),
+            ),
+            child: Column(
+              children: [
+                const Icon(Icons.water_drop_outlined, color: Color(0xFF4FC3F7)),
+                const SizedBox(height: 8),
+                Text('Hydration', style: TextStyle(color: isDark ? Colors.white60 : Colors.black54, fontSize: 12)),
+                const SizedBox(height: 4),
+                Text(hydration, style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 14)),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF81C784).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFF81C784).withOpacity(0.3)),
+            ),
+            child: Column(
+              children: [
+                const Icon(Icons.face_retouching_natural, color: Color(0xFF81C784)),
+                const SizedBox(height: 8),
+                Text('Skin Type', style: TextStyle(color: isDark ? Colors.white60 : Colors.black54, fontSize: 12)),
+                const SizedBox(height: 4),
+                Text(skinType, style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 14)),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildObservationCard(Map<String, dynamic> analysis) {
+    final obs = analysis['observations'] as String? ?? '';
+    if (obs.isEmpty) return const SizedBox.shrink();
+    final isDark = ref.read(themeProvider) == ThemeMode.dark;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFF6A1B9A).withOpacity(0.3)),
+        color: isDark ? Colors.white.withOpacity(0.05) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: isDark ? Colors.white12 : Colors.black.withOpacity(0.06)),
       ),
-      child: Column(
-        children: steps.asMap().entries.map((entry) {
-          final i = entry.key;
-          final step = entry.value;
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 7),
-            child: Row(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('🔍', style: TextStyle(fontSize: 22)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 26,
-                  height: 26,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF6A1B9A), Color(0xFF283593)],
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    '${i + 1}',
-                    style: const TextStyle(
-                        color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    step,
-                    style: const TextStyle(
-                        color: Colors.white70, fontSize: 14, height: 1.5),
-                  ),
-                ),
+                Text('AI Observations',
+                    style: TextStyle(
+                        color: isDark ? Colors.white : Colors.black87,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14)),
+                const SizedBox(height: 6),
+                Text(obs,
+                    style: TextStyle(
+                        color: isDark ? Colors.white70 : Colors.black54, fontSize: 13, height: 1.5)),
               ],
             ),
-          );
-        }).toList(),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _tipCard(Map<String, dynamic> tip) {
+  Widget _buildRoutineCard(String title, List<String> steps, Color accent) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: accent.withOpacity(0.07),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: accent.withOpacity(0.25)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title,
+              style: TextStyle(
+                  color: accent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15)),
+          const SizedBox(height: 12),
+          ...steps.asMap().entries.map((entry) {
+            final i = entry.key;
+            final step = entry.value;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 26,
+                    height: 26,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: accent.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${i + 1}',
+                      style: TextStyle(
+                          color: accent,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(step,
+                        style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 13,
+                            height: 1.5)),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIngredientsCard(List<String> ingredients) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('✨ Key Ingredients to Look For',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14)),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: ingredients
+                .map((ing) => Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6A1B9A).withOpacity(0.25),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                            color: const Color(0xFF8E24AA).withOpacity(0.4)),
+                      ),
+                      child: Text(ing,
+                          style: const TextStyle(
+                              color: Color(0xFFCE93D8),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600)),
+                    ))
+                .toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAvoidCard(List<String> avoid) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.redAccent.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.redAccent.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('🚫 Avoid These',
+              style: TextStyle(
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14)),
+          const SizedBox(height: 10),
+          ...avoid.map((item) => Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(
+                  children: [
+                    const Icon(Icons.cancel_outlined,
+                        color: Colors.redAccent, size: 16),
+                    const SizedBox(width: 8),
+                    Expanded(
+                        child: Text(item,
+                            style: const TextStyle(
+                                color: Colors.white70, fontSize: 13))),
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTipCard(String tip) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            const Color(0xFF283593).withOpacity(0.5),
+            const Color(0xFF6A1B9A).withOpacity(0.5),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF8E24AA).withOpacity(0.3)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('💡', style: TextStyle(fontSize: 22)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Personalised Tip',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14)),
+                const SizedBox(height: 6),
+                Text(tip,
+                    style: const TextStyle(
+                        color: Colors.white70, fontSize: 13, height: 1.5)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _tipCard(Map<String, dynamic> tip, Color textColor, Color subtextColor, Color cardColor, Color cardBorder) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.06),
+        color: cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        border: Border.all(color: cardBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -426,13 +874,14 @@ class SkincareScreen extends ConsumerWidget {
           const SizedBox(height: 10),
           Text(
             tip['title'] as String,
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+            style: TextStyle(
+                color: textColor, fontWeight: FontWeight.bold, fontSize: 13),
           ),
           const SizedBox(height: 4),
           Text(
             tip['detail'] as String,
-            style: const TextStyle(color: Colors.white54, fontSize: 11, height: 1.4),
+            style: TextStyle(
+                color: subtextColor, fontSize: 11, height: 1.4),
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
           ),
@@ -441,11 +890,11 @@ class SkincareScreen extends ConsumerWidget {
     );
   }
 
-  Widget _sectionHeader(String title) {
+  Widget _sectionHeader(String title, Color textColor) {
     return Text(
       title,
-      style: const TextStyle(
-          color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+      style: TextStyle(
+          color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
     );
   }
 }

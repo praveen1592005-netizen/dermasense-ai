@@ -1,7 +1,7 @@
 name: derma_sense_ai
 description: "DermaSense AI Pro — Production-grade AI Dermatology Platform"
 publish_to: 'none'
-version: 2.0.0+1
+version: 2.0.1+2
 
 environment:
   sdk: ^3.11.5
@@ -60,9 +60,12 @@ dependencies:
 
   # Utilities
   intl: ^0.20.2
+
   json_annotation: ^4.8.1
+  flutter_dotenv: ^5.1.0
   uuid: ^4.3.3
   open_file: ^3.5.10
+  universal_html: ^2.2.4
 
   flutter_localizations:
     sdk: flutter
@@ -77,5 +80,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - .env
     - assets/images/
     - assets/animations/
