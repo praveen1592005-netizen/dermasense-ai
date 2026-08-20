@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'api_key_service.dart';
 
 final apiClientProvider = Provider<ApiClient>((ref) => ApiClient());
 
@@ -222,8 +222,8 @@ class ApiClient {
     },
   ];
 
-  // ── Gemini API key ───────────────────────────────────────────────
-  String? get _geminiApiKey => dotenv.env['GEMINI_API_KEY'];
+  // ── Gemini API key (reads SharedPreferences first, then .env) ────
+  Future<String?> _getGeminiApiKey() => ApiKeyService().getGeminiApiKey();
 
   String get _backendUrl {
     return 'http://10.119.11.160:8000';
@@ -277,7 +277,7 @@ class ApiClient {
 
   /// Validates whether the image contains skin and if it's healthy.
   Future<String?> _geminiCheckSkinCondition(String base64Image) async {
-    final apiKey = _geminiApiKey;
+    final apiKey = await _getGeminiApiKey();
     if (apiKey == null || apiKey.isEmpty) return null;
     final url = Uri.parse(
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey',
@@ -378,7 +378,7 @@ class ApiClient {
   /// Uses Gemini Vision to analyze the skin image and return
   /// a structured disease prediction with recommendations.
   Future<Map<String, dynamic>?> _geminiVisionPredict(String base64Image) async {
-    final apiKey = _geminiApiKey;
+    final apiKey = await _getGeminiApiKey();
     if (apiKey == null || apiKey.isEmpty) return null;
 
     final url = Uri.parse(
@@ -505,7 +505,7 @@ class ApiClient {
   /// Cosmetic-focused Grok analysis for the Skincare screen.
   /// Identifies pimples, marks, dark spots, oiliness, and recommends a routine.
   Future<Map<String, dynamic>> skincareAnalyze(String base64Image) async {
-    final apiKey = _geminiApiKey;
+    final apiKey = await _getGeminiApiKey();
     if (apiKey == null || apiKey.isEmpty) return _defaultSkincareResult();
 
     final url = Uri.parse(
@@ -642,14 +642,10 @@ Respond ONLY with this exact JSON format (no markdown, no explanation):
   }
 
   /// Smart local analysis using pixel color & texture heuristics.
-  /// Used only when Gemini API is unavailable.
-  /// NOTE: This fallback has no skin detection, so it is ONLY
-  /// called when Gemini is unavailable. In that case we return a
-  /// warning instead of a false disease result.
+  /// Used as fallback when Gemini API is unavailable or key is invalid.
   Map<String, dynamic> _smartLocalAnalysis(String base64Image) {
-    // When Gemini is unavailable, we cannot verify if it is skin —
-    // throw NO_SKIN so the user is prompted to try again with API.
-    throw Exception('NO_SKIN_NO_API');
+    // Delegate to the full pixel-based analysis so the user always gets a result.
+    return _smartLocalAnalysisDirect(base64Image);
   }
 
   /// Internal pixel analysis — only called explicitly in tests.
@@ -849,7 +845,8 @@ Respond ONLY with this exact JSON format (no markdown, no explanation):
   /// Returns skin type detected by Gemini AI, or 'NO_FACE' if no face detected.
   Future<String> predictSkinType(String base64Image) async {
     // Try Gemini first for face detection + skin type
-    if (_geminiApiKey != null && _geminiApiKey!.isNotEmpty) {
+    final geminiKey = await _getGeminiApiKey();
+    if (geminiKey != null && geminiKey.isNotEmpty) {
       try {
         final geminiType = await _geminiPredictSkinType(base64Image);
         if (geminiType != null) return geminiType;
@@ -860,7 +857,7 @@ Respond ONLY with this exact JSON format (no markdown, no explanation):
   }
 
   Future<String?> _geminiPredictSkinType(String base64Image) async {
-    final apiKey = _geminiApiKey;
+    final apiKey = await _getGeminiApiKey();
     if (apiKey == null || apiKey.isEmpty) return null;
     final url = Uri.parse(
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey',

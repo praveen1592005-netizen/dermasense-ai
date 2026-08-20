@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/theme_service.dart';
 import '../services/language_service.dart';
+import '../services/api_key_service.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -245,6 +246,15 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ),
           ),
+          const SizedBox(height: 16),
+
+          // ── Gemini API Key Card ─────────────────────────────────────────────
+          _GeminiApiKeyCard(
+            isDark: isDark,
+            cardColor: cardColor,
+            textColor: textColor,
+            subColor: subColor,
+          ),
         ],
       ),
     );
@@ -347,6 +357,271 @@ class SettingsScreen extends ConsumerWidget {
                 height: 22,
                 color: isDark ? Colors.white12 : Colors.grey.shade200),
             child,
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Gemini API Key Input Widget ──────────────────────────────────────────────
+class _GeminiApiKeyCard extends StatefulWidget {
+  final bool isDark;
+  final Color cardColor;
+  final Color textColor;
+  final Color subColor;
+
+  const _GeminiApiKeyCard({
+    required this.isDark,
+    required this.cardColor,
+    required this.textColor,
+    required this.subColor,
+  });
+
+  @override
+  State<_GeminiApiKeyCard> createState() => _GeminiApiKeyCardState();
+}
+
+class _GeminiApiKeyCardState extends State<_GeminiApiKeyCard> {
+  final _controller = TextEditingController();
+  bool _obscure = true;
+  bool _saving = false;
+  String? _savedKey;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedKey();
+  }
+
+  Future<void> _loadSavedKey() async {
+    final key = await ApiKeyService().getGeminiApiKey();
+    if (mounted) {
+      setState(() {
+        _savedKey = key;
+        _controller.text = key ?? '';
+      });
+    }
+  }
+
+  Future<void> _saveKey() async {
+    final key = _controller.text.trim();
+    if (!ApiKeyService().isValidFormat(key)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Row(children: [
+            Icon(Icons.error_outline, color: Colors.white, size: 18),
+            SizedBox(width: 8),
+            Expanded(child: Text('Invalid key format. Gemini keys start with AIza...')),
+          ]),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      );
+      return;
+    }
+    setState(() => _saving = true);
+    await ApiKeyService().saveGeminiApiKey(key);
+    setState(() {
+      _saving = false;
+      _savedKey = key;
+    });
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Row(children: [
+            Icon(Icons.check_circle_rounded, color: Colors.white, size: 18),
+            SizedBox(width: 8),
+            Text('Gemini API key saved!'),
+          ]),
+          backgroundColor: const Color(0xFF8E24AA),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      );
+    }
+  }
+
+  Future<void> _clearKey() async {
+    await ApiKeyService().clearGeminiApiKey();
+    setState(() {
+      _savedKey = null;
+      _controller.clear();
+    });
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('API key cleared.'),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = widget.isDark;
+    final cardColor = widget.cardColor;
+    final textColor = widget.textColor;
+    final subColor = widget.subColor;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(isDark ? 0.25 : 0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF8E24AA).withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.key_rounded, color: Color(0xFF8E24AA), size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Gemini API Key',
+                          style: TextStyle(
+                              color: textColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15)),
+                      Text('Required for AI skin analysis',
+                          style: TextStyle(color: subColor, fontSize: 12)),
+                    ],
+                  ),
+                ),
+                if (_savedKey != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.check_circle, color: Colors.green, size: 12),
+                        SizedBox(width: 4),
+                        Text('Active', style: TextStyle(color: Colors.green, fontSize: 11, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+            Divider(height: 22, color: isDark ? Colors.white12 : Colors.grey.shade200),
+            // Info
+            Container(
+              padding: const EdgeInsets.all(10),
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: Colors.blue.withOpacity(0.07),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.blue.withOpacity(0.15)),
+              ),
+              child: const Text(
+                '🔑 Get a free key at aistudio.google.com/apikey\n'
+                'Keys start with "AIza..." — required for AI scan.',
+                style: TextStyle(fontSize: 12, color: Colors.blueAccent, height: 1.5),
+              ),
+            ),
+            // Input field
+            TextField(
+              controller: _controller,
+              obscureText: _obscure,
+              style: TextStyle(color: textColor, fontFamily: 'monospace', fontSize: 13),
+              decoration: InputDecoration(
+                hintText: 'AIzaSy...',
+                hintStyle: TextStyle(color: subColor),
+                filled: true,
+                fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade100,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Color(0xFF8E24AA), width: 1.5),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscure ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                    color: subColor,
+                    size: 20,
+                  ),
+                  onPressed: () => setState(() => _obscure = !_obscure),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: _saving ? null : _saveKey,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF6A1B9A), Color(0xFF8E24AA)],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Center(
+                        child: _saving
+                            ? const SizedBox(
+                                width: 18, height: 18,
+                                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                              )
+                            : const Text('Save Key',
+                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                  ),
+                ),
+                if (_savedKey != null) ...[
+                  const SizedBox(width: 10),
+                  GestureDetector(
+                    onTap: _clearKey,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.red.withOpacity(0.3)),
+                      ),
+                      child: const Text('Clear',
+                          style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ],
         ),
       ),
