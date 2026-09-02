@@ -1,0 +1,16 @@
+{
+    "temperature": 0.9855522845522078,
+    "model_name": "DermaSense_EfficientNetV2B2",
+    "model_version": "1.0",
+    "num_classes": 7,
+    "class_names": [
+        "MEL",
+        "NV",
+        "BCC",
+        "AKIEC",
+        "BKL",
+        "DF",
+        "VASC"
+    ],
+    "input_size": 260
+}
