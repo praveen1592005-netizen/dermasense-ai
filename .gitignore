@@ -1,0 +1,74 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Node / Frontend / Mobile
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+.expo/
+
+# Python / Backend — NEVER commit secrets or environments
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*.class
+pip_out.log
+
+# Environment files — NEVER commit real .env files
+.env
+.env.*
+!.env.example
+!.env.example.*
+
+# Model files (large binary — upload separately)
+!backend/models/skin_disease/DermaSense_SkinDisease_v1.keras
+backend/models/*.h5
+backend/models/*.pkl
+backend/models/*.pth
+ml/models/
+*.keras
+*.h5
+
+# Editor directories
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+Thumbs.db
+
+# Temp / scratch / backup
+scratch/
+temp_apk_unpack/
+mobile_flutter_backup/
+dummy.jpg
+backend/dummy.jpg
+
+# Android build outputs (do not commit APK/AAB)
+mobile/android/.gradle/
+mobile/android/app/build/
+mobile/android/build/
+mobile/android/local.properties
+mobile/.expo/
+mobile/node_modules/
+
+# Python test/cache
+.pytest_cache/
+backend/.pytest_cache/
+
+# Render / deployment
+backend/pip_out.log
