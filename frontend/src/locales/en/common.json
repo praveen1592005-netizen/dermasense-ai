@@ -1,0 +1,54 @@
+{
+  "app": {
+    "name": "DermaSense AI",
+    "tagline": "AI-Powered Skin Health & Personalized Care"
+  },
+  "nav": {
+    "home": "Home",
+    "features": "Features",
+    "howItWorks": "How It Works",
+    "comparison": "Skincare vs Disease",
+    "security": "Security & Privacy",
+    "faq": "FAQ",
+    "dashboard": "Dashboard",
+    "signIn": "Sign In",
+    "getStarted": "Get Started",
+    "signOut": "Sign Out"
+  },
+  "dashboard": {
+    "welcome": "Welcome back",
+    "workspaceSubtitle": "Your personalized skin-health workspace.",
+    "coreServices": "Core AI Services",
+    "skincareTitle": "Skincare Analysis",
+    "skincareDesc": "Understand your skin characteristics and build a personalized skincare routine.",
+    "diseaseTitle": "Skin Disease Analysis",
+    "diseaseDesc": "Prepare an image and symptom profile for future AI-assisted skin analysis.",
+    "aiSoon": "AI Analysis Coming Soon"
+  },
+  "profile": {
+    "title": "Account & Personal Profile",
+    "subtitle": "Manage your identity, structured contact details, skin characteristics, and privacy preferences.",
+    "personalInfo": "Personal Information",
+    "contactInfo": "Contact Information",
+    "skinProfile": "Skin Profile",
+    "identityVault": "Identity Verification",
+    "completion": "Profile Completion",
+    "editProfile": "Edit Profile",
+    "saveChanges": "Save Changes",
+    "cancel": "Cancel",
+    "notProvided": "Not provided"
+  },
+  "settings": {
+    "title": "Workspace Settings",
+    "subtitle": "Configure appearance themes, notification preferences, language, and security controls.",
+    "appearance": "Appearance",
+    "language": "Language",
+    "notifications": "Notifications",
+    "privacy": "Privacy & Data",
+    "security": "Security",
+    "account": "Account",
+    "themeLight": "Light Mode",
+    "themeDark": "Dark Mode",
+    "themeSystem": "System Default"
+  }
+}
