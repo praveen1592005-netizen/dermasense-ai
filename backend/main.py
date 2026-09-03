@@ -104,9 +104,13 @@ app = FastAPI(
 # ── CORS Configuration ────────────────────────────────────────────────────────
 allowed_origins_str = os.getenv(
     "ALLOWED_ORIGINS",
-    "http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://localhost:3000,https://dermasense-ai-pi.vercel.app"
+    "http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://localhost:3000"
 )
 allowed_origins = [o.strip() for o in allowed_origins_str.split(",") if o.strip()]
+
+# Force Vercel production origin to ensure CORS passes even if Render dashboard env is stale
+if "https://dermasense-ai-pi.vercel.app" not in allowed_origins:
+    allowed_origins.append("https://dermasense-ai-pi.vercel.app")
 
 app.add_middleware(
     CORSMiddleware,
@@ -158,7 +162,7 @@ async def health():
         "calibration_loaded": config is not None,
         "model_name": config.get("model_name") if config else None,
         "model_version": str(config.get("model_version")) if config else None,
-        "version": "1.0",
+        "version": "1.0.1",
     }
 
 
