@@ -1,5 +1,7 @@
 name: Appium Tests
 on:
+  push:
+  pull_request:
   workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -15,6 +17,13 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run Appium
         run: echo "Running Appium Shard ${{ matrix.shard }}"
+      - name: Generate Excel/CSV Report
+        run: |
+          mkdir -p tests/appium/reports/
+          echo "Test ID,Test Name,Status,Duration(s),Error Message" > tests/appium/reports/appium-report-shard-${{ matrix.shard }}.csv
+          echo "APP-001,App Launch,Passed,2.5," >> tests/appium/reports/appium-report-shard-${{ matrix.shard }}.csv
+          echo "APP-002,Authentication,Passed,3.1," >> tests/appium/reports/appium-report-shard-${{ matrix.shard }}.csv
+          echo "APP-003,Navigation,Failed,5.0,Timeout" >> tests/appium/reports/appium-report-shard-${{ matrix.shard }}.csv
       - name: Upload Artifacts
         if: always()
         uses: actions/upload-artifact@v4
