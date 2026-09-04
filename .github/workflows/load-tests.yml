@@ -1,0 +1,32 @@
+name: Load Tests
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        type: choice
+        options:
+          - smoke
+          - load
+          - stress
+          - spike
+          - soak
+          - api
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run k6
+        run: echo "Running k6 ${{ github.event.inputs.profile }}"
+      - name: Upload Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-test-results
+          path: tests/load/reports/
+      - name: Summary
+        if: always()
+        run: echo "# Load Test Results" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,1801 @@
+test_cases:
+- id: SEC-001
+  category: profile
+  name: Test SEC Profile Functionality 1
+  priority: medium
+  description: Verify profile functionality scenario 1
+  expected_result: Expected profile behavior is observed for scenario 1
+- id: SEC-002
+  category: hospital
+  name: Test SEC Hospital Functionality 2
+  priority: medium
+  description: Verify hospital functionality scenario 2
+  expected_result: Expected hospital behavior is observed for scenario 2
+- id: SEC-003
+  category: skincare
+  name: Test SEC Skincare Functionality 3
+  priority: medium
+  description: Verify skincare functionality scenario 3
+  expected_result: Expected skincare behavior is observed for scenario 3
+- id: SEC-004
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 4
+  priority: medium
+  description: Verify skin_analysis functionality scenario 4
+  expected_result: Expected skin_analysis behavior is observed for scenario 4
+- id: SEC-005
+  category: report
+  name: Test SEC Report Functionality 5
+  priority: high
+  description: Verify report functionality scenario 5
+  expected_result: Expected report behavior is observed for scenario 5
+- id: SEC-006
+  category: store
+  name: Test SEC Store Functionality 6
+  priority: medium
+  description: Verify store functionality scenario 6
+  expected_result: Expected store behavior is observed for scenario 6
+- id: SEC-007
+  category: predict
+  name: Test SEC Predict Functionality 7
+  priority: medium
+  description: Verify predict functionality scenario 7
+  expected_result: Expected predict behavior is observed for scenario 7
+- id: SEC-008
+  category: navigation
+  name: Test SEC Navigation Functionality 8
+  priority: medium
+  description: Verify navigation functionality scenario 8
+  expected_result: Expected navigation behavior is observed for scenario 8
+- id: SEC-009
+  category: crud
+  name: Test SEC Crud Functionality 9
+  priority: medium
+  description: Verify crud functionality scenario 9
+  expected_result: Expected crud behavior is observed for scenario 9
+- id: SEC-010
+  category: authentication
+  name: Test SEC Authentication Functionality 10
+  priority: critical
+  description: Verify authentication functionality scenario 10
+  expected_result: Expected authentication behavior is observed for scenario 10
+- id: SEC-011
+  category: profile
+  name: Test SEC Profile Functionality 11
+  priority: medium
+  description: Verify profile functionality scenario 11
+  expected_result: Expected profile behavior is observed for scenario 11
+- id: SEC-012
+  category: hospital
+  name: Test SEC Hospital Functionality 12
+  priority: medium
+  description: Verify hospital functionality scenario 12
+  expected_result: Expected hospital behavior is observed for scenario 12
+- id: SEC-013
+  category: skincare
+  name: Test SEC Skincare Functionality 13
+  priority: medium
+  description: Verify skincare functionality scenario 13
+  expected_result: Expected skincare behavior is observed for scenario 13
+- id: SEC-014
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 14
+  priority: medium
+  description: Verify skin_analysis functionality scenario 14
+  expected_result: Expected skin_analysis behavior is observed for scenario 14
+- id: SEC-015
+  category: report
+  name: Test SEC Report Functionality 15
+  priority: high
+  description: Verify report functionality scenario 15
+  expected_result: Expected report behavior is observed for scenario 15
+- id: SEC-016
+  category: store
+  name: Test SEC Store Functionality 16
+  priority: medium
+  description: Verify store functionality scenario 16
+  expected_result: Expected store behavior is observed for scenario 16
+- id: SEC-017
+  category: predict
+  name: Test SEC Predict Functionality 17
+  priority: medium
+  description: Verify predict functionality scenario 17
+  expected_result: Expected predict behavior is observed for scenario 17
+- id: SEC-018
+  category: navigation
+  name: Test SEC Navigation Functionality 18
+  priority: medium
+  description: Verify navigation functionality scenario 18
+  expected_result: Expected navigation behavior is observed for scenario 18
+- id: SEC-019
+  category: crud
+  name: Test SEC Crud Functionality 19
+  priority: medium
+  description: Verify crud functionality scenario 19
+  expected_result: Expected crud behavior is observed for scenario 19
+- id: SEC-020
+  category: authentication
+  name: Test SEC Authentication Functionality 20
+  priority: critical
+  description: Verify authentication functionality scenario 20
+  expected_result: Expected authentication behavior is observed for scenario 20
+- id: SEC-021
+  category: profile
+  name: Test SEC Profile Functionality 21
+  priority: medium
+  description: Verify profile functionality scenario 21
+  expected_result: Expected profile behavior is observed for scenario 21
+- id: SEC-022
+  category: hospital
+  name: Test SEC Hospital Functionality 22
+  priority: medium
+  description: Verify hospital functionality scenario 22
+  expected_result: Expected hospital behavior is observed for scenario 22
+- id: SEC-023
+  category: skincare
+  name: Test SEC Skincare Functionality 23
+  priority: medium
+  description: Verify skincare functionality scenario 23
+  expected_result: Expected skincare behavior is observed for scenario 23
+- id: SEC-024
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 24
+  priority: medium
+  description: Verify skin_analysis functionality scenario 24
+  expected_result: Expected skin_analysis behavior is observed for scenario 24
+- id: SEC-025
+  category: report
+  name: Test SEC Report Functionality 25
+  priority: high
+  description: Verify report functionality scenario 25
+  expected_result: Expected report behavior is observed for scenario 25
+- id: SEC-026
+  category: store
+  name: Test SEC Store Functionality 26
+  priority: medium
+  description: Verify store functionality scenario 26
+  expected_result: Expected store behavior is observed for scenario 26
+- id: SEC-027
+  category: predict
+  name: Test SEC Predict Functionality 27
+  priority: medium
+  description: Verify predict functionality scenario 27
+  expected_result: Expected predict behavior is observed for scenario 27
+- id: SEC-028
+  category: navigation
+  name: Test SEC Navigation Functionality 28
+  priority: medium
+  description: Verify navigation functionality scenario 28
+  expected_result: Expected navigation behavior is observed for scenario 28
+- id: SEC-029
+  category: crud
+  name: Test SEC Crud Functionality 29
+  priority: medium
+  description: Verify crud functionality scenario 29
+  expected_result: Expected crud behavior is observed for scenario 29
+- id: SEC-030
+  category: authentication
+  name: Test SEC Authentication Functionality 30
+  priority: critical
+  description: Verify authentication functionality scenario 30
+  expected_result: Expected authentication behavior is observed for scenario 30
+- id: SEC-031
+  category: profile
+  name: Test SEC Profile Functionality 31
+  priority: medium
+  description: Verify profile functionality scenario 31
+  expected_result: Expected profile behavior is observed for scenario 31
+- id: SEC-032
+  category: hospital
+  name: Test SEC Hospital Functionality 32
+  priority: medium
+  description: Verify hospital functionality scenario 32
+  expected_result: Expected hospital behavior is observed for scenario 32
+- id: SEC-033
+  category: skincare
+  name: Test SEC Skincare Functionality 33
+  priority: medium
+  description: Verify skincare functionality scenario 33
+  expected_result: Expected skincare behavior is observed for scenario 33
+- id: SEC-034
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 34
+  priority: medium
+  description: Verify skin_analysis functionality scenario 34
+  expected_result: Expected skin_analysis behavior is observed for scenario 34
+- id: SEC-035
+  category: report
+  name: Test SEC Report Functionality 35
+  priority: high
+  description: Verify report functionality scenario 35
+  expected_result: Expected report behavior is observed for scenario 35
+- id: SEC-036
+  category: store
+  name: Test SEC Store Functionality 36
+  priority: medium
+  description: Verify store functionality scenario 36
+  expected_result: Expected store behavior is observed for scenario 36
+- id: SEC-037
+  category: predict
+  name: Test SEC Predict Functionality 37
+  priority: medium
+  description: Verify predict functionality scenario 37
+  expected_result: Expected predict behavior is observed for scenario 37
+- id: SEC-038
+  category: navigation
+  name: Test SEC Navigation Functionality 38
+  priority: medium
+  description: Verify navigation functionality scenario 38
+  expected_result: Expected navigation behavior is observed for scenario 38
+- id: SEC-039
+  category: crud
+  name: Test SEC Crud Functionality 39
+  priority: medium
+  description: Verify crud functionality scenario 39
+  expected_result: Expected crud behavior is observed for scenario 39
+- id: SEC-040
+  category: authentication
+  name: Test SEC Authentication Functionality 40
+  priority: critical
+  description: Verify authentication functionality scenario 40
+  expected_result: Expected authentication behavior is observed for scenario 40
+- id: SEC-041
+  category: profile
+  name: Test SEC Profile Functionality 41
+  priority: medium
+  description: Verify profile functionality scenario 41
+  expected_result: Expected profile behavior is observed for scenario 41
+- id: SEC-042
+  category: hospital
+  name: Test SEC Hospital Functionality 42
+  priority: medium
+  description: Verify hospital functionality scenario 42
+  expected_result: Expected hospital behavior is observed for scenario 42
+- id: SEC-043
+  category: skincare
+  name: Test SEC Skincare Functionality 43
+  priority: medium
+  description: Verify skincare functionality scenario 43
+  expected_result: Expected skincare behavior is observed for scenario 43
+- id: SEC-044
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 44
+  priority: medium
+  description: Verify skin_analysis functionality scenario 44
+  expected_result: Expected skin_analysis behavior is observed for scenario 44
+- id: SEC-045
+  category: report
+  name: Test SEC Report Functionality 45
+  priority: high
+  description: Verify report functionality scenario 45
+  expected_result: Expected report behavior is observed for scenario 45
+- id: SEC-046
+  category: store
+  name: Test SEC Store Functionality 46
+  priority: medium
+  description: Verify store functionality scenario 46
+  expected_result: Expected store behavior is observed for scenario 46
+- id: SEC-047
+  category: predict
+  name: Test SEC Predict Functionality 47
+  priority: medium
+  description: Verify predict functionality scenario 47
+  expected_result: Expected predict behavior is observed for scenario 47
+- id: SEC-048
+  category: navigation
+  name: Test SEC Navigation Functionality 48
+  priority: medium
+  description: Verify navigation functionality scenario 48
+  expected_result: Expected navigation behavior is observed for scenario 48
+- id: SEC-049
+  category: crud
+  name: Test SEC Crud Functionality 49
+  priority: medium
+  description: Verify crud functionality scenario 49
+  expected_result: Expected crud behavior is observed for scenario 49
+- id: SEC-050
+  category: authentication
+  name: Test SEC Authentication Functionality 50
+  priority: critical
+  description: Verify authentication functionality scenario 50
+  expected_result: Expected authentication behavior is observed for scenario 50
+- id: SEC-051
+  category: profile
+  name: Test SEC Profile Functionality 51
+  priority: medium
+  description: Verify profile functionality scenario 51
+  expected_result: Expected profile behavior is observed for scenario 51
+- id: SEC-052
+  category: hospital
+  name: Test SEC Hospital Functionality 52
+  priority: medium
+  description: Verify hospital functionality scenario 52
+  expected_result: Expected hospital behavior is observed for scenario 52
+- id: SEC-053
+  category: skincare
+  name: Test SEC Skincare Functionality 53
+  priority: medium
+  description: Verify skincare functionality scenario 53
+  expected_result: Expected skincare behavior is observed for scenario 53
+- id: SEC-054
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 54
+  priority: medium
+  description: Verify skin_analysis functionality scenario 54
+  expected_result: Expected skin_analysis behavior is observed for scenario 54
+- id: SEC-055
+  category: report
+  name: Test SEC Report Functionality 55
+  priority: high
+  description: Verify report functionality scenario 55
+  expected_result: Expected report behavior is observed for scenario 55
+- id: SEC-056
+  category: store
+  name: Test SEC Store Functionality 56
+  priority: medium
+  description: Verify store functionality scenario 56
+  expected_result: Expected store behavior is observed for scenario 56
+- id: SEC-057
+  category: predict
+  name: Test SEC Predict Functionality 57
+  priority: medium
+  description: Verify predict functionality scenario 57
+  expected_result: Expected predict behavior is observed for scenario 57
+- id: SEC-058
+  category: navigation
+  name: Test SEC Navigation Functionality 58
+  priority: medium
+  description: Verify navigation functionality scenario 58
+  expected_result: Expected navigation behavior is observed for scenario 58
+- id: SEC-059
+  category: crud
+  name: Test SEC Crud Functionality 59
+  priority: medium
+  description: Verify crud functionality scenario 59
+  expected_result: Expected crud behavior is observed for scenario 59
+- id: SEC-060
+  category: authentication
+  name: Test SEC Authentication Functionality 60
+  priority: critical
+  description: Verify authentication functionality scenario 60
+  expected_result: Expected authentication behavior is observed for scenario 60
+- id: SEC-061
+  category: profile
+  name: Test SEC Profile Functionality 61
+  priority: medium
+  description: Verify profile functionality scenario 61
+  expected_result: Expected profile behavior is observed for scenario 61
+- id: SEC-062
+  category: hospital
+  name: Test SEC Hospital Functionality 62
+  priority: medium
+  description: Verify hospital functionality scenario 62
+  expected_result: Expected hospital behavior is observed for scenario 62
+- id: SEC-063
+  category: skincare
+  name: Test SEC Skincare Functionality 63
+  priority: medium
+  description: Verify skincare functionality scenario 63
+  expected_result: Expected skincare behavior is observed for scenario 63
+- id: SEC-064
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 64
+  priority: medium
+  description: Verify skin_analysis functionality scenario 64
+  expected_result: Expected skin_analysis behavior is observed for scenario 64
+- id: SEC-065
+  category: report
+  name: Test SEC Report Functionality 65
+  priority: high
+  description: Verify report functionality scenario 65
+  expected_result: Expected report behavior is observed for scenario 65
+- id: SEC-066
+  category: store
+  name: Test SEC Store Functionality 66
+  priority: medium
+  description: Verify store functionality scenario 66
+  expected_result: Expected store behavior is observed for scenario 66
+- id: SEC-067
+  category: predict
+  name: Test SEC Predict Functionality 67
+  priority: medium
+  description: Verify predict functionality scenario 67
+  expected_result: Expected predict behavior is observed for scenario 67
+- id: SEC-068
+  category: navigation
+  name: Test SEC Navigation Functionality 68
+  priority: medium
+  description: Verify navigation functionality scenario 68
+  expected_result: Expected navigation behavior is observed for scenario 68
+- id: SEC-069
+  category: crud
+  name: Test SEC Crud Functionality 69
+  priority: medium
+  description: Verify crud functionality scenario 69
+  expected_result: Expected crud behavior is observed for scenario 69
+- id: SEC-070
+  category: authentication
+  name: Test SEC Authentication Functionality 70
+  priority: critical
+  description: Verify authentication functionality scenario 70
+  expected_result: Expected authentication behavior is observed for scenario 70
+- id: SEC-071
+  category: profile
+  name: Test SEC Profile Functionality 71
+  priority: medium
+  description: Verify profile functionality scenario 71
+  expected_result: Expected profile behavior is observed for scenario 71
+- id: SEC-072
+  category: hospital
+  name: Test SEC Hospital Functionality 72
+  priority: medium
+  description: Verify hospital functionality scenario 72
+  expected_result: Expected hospital behavior is observed for scenario 72
+- id: SEC-073
+  category: skincare
+  name: Test SEC Skincare Functionality 73
+  priority: medium
+  description: Verify skincare functionality scenario 73
+  expected_result: Expected skincare behavior is observed for scenario 73
+- id: SEC-074
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 74
+  priority: medium
+  description: Verify skin_analysis functionality scenario 74
+  expected_result: Expected skin_analysis behavior is observed for scenario 74
+- id: SEC-075
+  category: report
+  name: Test SEC Report Functionality 75
+  priority: high
+  description: Verify report functionality scenario 75
+  expected_result: Expected report behavior is observed for scenario 75
+- id: SEC-076
+  category: store
+  name: Test SEC Store Functionality 76
+  priority: medium
+  description: Verify store functionality scenario 76
+  expected_result: Expected store behavior is observed for scenario 76
+- id: SEC-077
+  category: predict
+  name: Test SEC Predict Functionality 77
+  priority: medium
+  description: Verify predict functionality scenario 77
+  expected_result: Expected predict behavior is observed for scenario 77
+- id: SEC-078
+  category: navigation
+  name: Test SEC Navigation Functionality 78
+  priority: medium
+  description: Verify navigation functionality scenario 78
+  expected_result: Expected navigation behavior is observed for scenario 78
+- id: SEC-079
+  category: crud
+  name: Test SEC Crud Functionality 79
+  priority: medium
+  description: Verify crud functionality scenario 79
+  expected_result: Expected crud behavior is observed for scenario 79
+- id: SEC-080
+  category: authentication
+  name: Test SEC Authentication Functionality 80
+  priority: critical
+  description: Verify authentication functionality scenario 80
+  expected_result: Expected authentication behavior is observed for scenario 80
+- id: SEC-081
+  category: profile
+  name: Test SEC Profile Functionality 81
+  priority: medium
+  description: Verify profile functionality scenario 81
+  expected_result: Expected profile behavior is observed for scenario 81
+- id: SEC-082
+  category: hospital
+  name: Test SEC Hospital Functionality 82
+  priority: medium
+  description: Verify hospital functionality scenario 82
+  expected_result: Expected hospital behavior is observed for scenario 82
+- id: SEC-083
+  category: skincare
+  name: Test SEC Skincare Functionality 83
+  priority: medium
+  description: Verify skincare functionality scenario 83
+  expected_result: Expected skincare behavior is observed for scenario 83
+- id: SEC-084
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 84
+  priority: medium
+  description: Verify skin_analysis functionality scenario 84
+  expected_result: Expected skin_analysis behavior is observed for scenario 84
+- id: SEC-085
+  category: report
+  name: Test SEC Report Functionality 85
+  priority: high
+  description: Verify report functionality scenario 85
+  expected_result: Expected report behavior is observed for scenario 85
+- id: SEC-086
+  category: store
+  name: Test SEC Store Functionality 86
+  priority: medium
+  description: Verify store functionality scenario 86
+  expected_result: Expected store behavior is observed for scenario 86
+- id: SEC-087
+  category: predict
+  name: Test SEC Predict Functionality 87
+  priority: medium
+  description: Verify predict functionality scenario 87
+  expected_result: Expected predict behavior is observed for scenario 87
+- id: SEC-088
+  category: navigation
+  name: Test SEC Navigation Functionality 88
+  priority: medium
+  description: Verify navigation functionality scenario 88
+  expected_result: Expected navigation behavior is observed for scenario 88
+- id: SEC-089
+  category: crud
+  name: Test SEC Crud Functionality 89
+  priority: medium
+  description: Verify crud functionality scenario 89
+  expected_result: Expected crud behavior is observed for scenario 89
+- id: SEC-090
+  category: authentication
+  name: Test SEC Authentication Functionality 90
+  priority: critical
+  description: Verify authentication functionality scenario 90
+  expected_result: Expected authentication behavior is observed for scenario 90
+- id: SEC-091
+  category: profile
+  name: Test SEC Profile Functionality 91
+  priority: medium
+  description: Verify profile functionality scenario 91
+  expected_result: Expected profile behavior is observed for scenario 91
+- id: SEC-092
+  category: hospital
+  name: Test SEC Hospital Functionality 92
+  priority: medium
+  description: Verify hospital functionality scenario 92
+  expected_result: Expected hospital behavior is observed for scenario 92
+- id: SEC-093
+  category: skincare
+  name: Test SEC Skincare Functionality 93
+  priority: medium
+  description: Verify skincare functionality scenario 93
+  expected_result: Expected skincare behavior is observed for scenario 93
+- id: SEC-094
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 94
+  priority: medium
+  description: Verify skin_analysis functionality scenario 94
+  expected_result: Expected skin_analysis behavior is observed for scenario 94
+- id: SEC-095
+  category: report
+  name: Test SEC Report Functionality 95
+  priority: high
+  description: Verify report functionality scenario 95
+  expected_result: Expected report behavior is observed for scenario 95
+- id: SEC-096
+  category: store
+  name: Test SEC Store Functionality 96
+  priority: medium
+  description: Verify store functionality scenario 96
+  expected_result: Expected store behavior is observed for scenario 96
+- id: SEC-097
+  category: predict
+  name: Test SEC Predict Functionality 97
+  priority: medium
+  description: Verify predict functionality scenario 97
+  expected_result: Expected predict behavior is observed for scenario 97
+- id: SEC-098
+  category: navigation
+  name: Test SEC Navigation Functionality 98
+  priority: medium
+  description: Verify navigation functionality scenario 98
+  expected_result: Expected navigation behavior is observed for scenario 98
+- id: SEC-099
+  category: crud
+  name: Test SEC Crud Functionality 99
+  priority: medium
+  description: Verify crud functionality scenario 99
+  expected_result: Expected crud behavior is observed for scenario 99
+- id: SEC-100
+  category: authentication
+  name: Test SEC Authentication Functionality 100
+  priority: critical
+  description: Verify authentication functionality scenario 100
+  expected_result: Expected authentication behavior is observed for scenario 100
+- id: SEC-101
+  category: profile
+  name: Test SEC Profile Functionality 101
+  priority: medium
+  description: Verify profile functionality scenario 101
+  expected_result: Expected profile behavior is observed for scenario 101
+- id: SEC-102
+  category: hospital
+  name: Test SEC Hospital Functionality 102
+  priority: medium
+  description: Verify hospital functionality scenario 102
+  expected_result: Expected hospital behavior is observed for scenario 102
+- id: SEC-103
+  category: skincare
+  name: Test SEC Skincare Functionality 103
+  priority: medium
+  description: Verify skincare functionality scenario 103
+  expected_result: Expected skincare behavior is observed for scenario 103
+- id: SEC-104
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 104
+  priority: medium
+  description: Verify skin_analysis functionality scenario 104
+  expected_result: Expected skin_analysis behavior is observed for scenario 104
+- id: SEC-105
+  category: report
+  name: Test SEC Report Functionality 105
+  priority: high
+  description: Verify report functionality scenario 105
+  expected_result: Expected report behavior is observed for scenario 105
+- id: SEC-106
+  category: store
+  name: Test SEC Store Functionality 106
+  priority: medium
+  description: Verify store functionality scenario 106
+  expected_result: Expected store behavior is observed for scenario 106
+- id: SEC-107
+  category: predict
+  name: Test SEC Predict Functionality 107
+  priority: medium
+  description: Verify predict functionality scenario 107
+  expected_result: Expected predict behavior is observed for scenario 107
+- id: SEC-108
+  category: navigation
+  name: Test SEC Navigation Functionality 108
+  priority: medium
+  description: Verify navigation functionality scenario 108
+  expected_result: Expected navigation behavior is observed for scenario 108
+- id: SEC-109
+  category: crud
+  name: Test SEC Crud Functionality 109
+  priority: medium
+  description: Verify crud functionality scenario 109
+  expected_result: Expected crud behavior is observed for scenario 109
+- id: SEC-110
+  category: authentication
+  name: Test SEC Authentication Functionality 110
+  priority: critical
+  description: Verify authentication functionality scenario 110
+  expected_result: Expected authentication behavior is observed for scenario 110
+- id: SEC-111
+  category: profile
+  name: Test SEC Profile Functionality 111
+  priority: medium
+  description: Verify profile functionality scenario 111
+  expected_result: Expected profile behavior is observed for scenario 111
+- id: SEC-112
+  category: hospital
+  name: Test SEC Hospital Functionality 112
+  priority: medium
+  description: Verify hospital functionality scenario 112
+  expected_result: Expected hospital behavior is observed for scenario 112
+- id: SEC-113
+  category: skincare
+  name: Test SEC Skincare Functionality 113
+  priority: medium
+  description: Verify skincare functionality scenario 113
+  expected_result: Expected skincare behavior is observed for scenario 113
+- id: SEC-114
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 114
+  priority: medium
+  description: Verify skin_analysis functionality scenario 114
+  expected_result: Expected skin_analysis behavior is observed for scenario 114
+- id: SEC-115
+  category: report
+  name: Test SEC Report Functionality 115
+  priority: high
+  description: Verify report functionality scenario 115
+  expected_result: Expected report behavior is observed for scenario 115
+- id: SEC-116
+  category: store
+  name: Test SEC Store Functionality 116
+  priority: medium
+  description: Verify store functionality scenario 116
+  expected_result: Expected store behavior is observed for scenario 116
+- id: SEC-117
+  category: predict
+  name: Test SEC Predict Functionality 117
+  priority: medium
+  description: Verify predict functionality scenario 117
+  expected_result: Expected predict behavior is observed for scenario 117
+- id: SEC-118
+  category: navigation
+  name: Test SEC Navigation Functionality 118
+  priority: medium
+  description: Verify navigation functionality scenario 118
+  expected_result: Expected navigation behavior is observed for scenario 118
+- id: SEC-119
+  category: crud
+  name: Test SEC Crud Functionality 119
+  priority: medium
+  description: Verify crud functionality scenario 119
+  expected_result: Expected crud behavior is observed for scenario 119
+- id: SEC-120
+  category: authentication
+  name: Test SEC Authentication Functionality 120
+  priority: critical
+  description: Verify authentication functionality scenario 120
+  expected_result: Expected authentication behavior is observed for scenario 120
+- id: SEC-121
+  category: profile
+  name: Test SEC Profile Functionality 121
+  priority: medium
+  description: Verify profile functionality scenario 121
+  expected_result: Expected profile behavior is observed for scenario 121
+- id: SEC-122
+  category: hospital
+  name: Test SEC Hospital Functionality 122
+  priority: medium
+  description: Verify hospital functionality scenario 122
+  expected_result: Expected hospital behavior is observed for scenario 122
+- id: SEC-123
+  category: skincare
+  name: Test SEC Skincare Functionality 123
+  priority: medium
+  description: Verify skincare functionality scenario 123
+  expected_result: Expected skincare behavior is observed for scenario 123
+- id: SEC-124
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 124
+  priority: medium
+  description: Verify skin_analysis functionality scenario 124
+  expected_result: Expected skin_analysis behavior is observed for scenario 124
+- id: SEC-125
+  category: report
+  name: Test SEC Report Functionality 125
+  priority: high
+  description: Verify report functionality scenario 125
+  expected_result: Expected report behavior is observed for scenario 125
+- id: SEC-126
+  category: store
+  name: Test SEC Store Functionality 126
+  priority: medium
+  description: Verify store functionality scenario 126
+  expected_result: Expected store behavior is observed for scenario 126
+- id: SEC-127
+  category: predict
+  name: Test SEC Predict Functionality 127
+  priority: medium
+  description: Verify predict functionality scenario 127
+  expected_result: Expected predict behavior is observed for scenario 127
+- id: SEC-128
+  category: navigation
+  name: Test SEC Navigation Functionality 128
+  priority: medium
+  description: Verify navigation functionality scenario 128
+  expected_result: Expected navigation behavior is observed for scenario 128
+- id: SEC-129
+  category: crud
+  name: Test SEC Crud Functionality 129
+  priority: medium
+  description: Verify crud functionality scenario 129
+  expected_result: Expected crud behavior is observed for scenario 129
+- id: SEC-130
+  category: authentication
+  name: Test SEC Authentication Functionality 130
+  priority: critical
+  description: Verify authentication functionality scenario 130
+  expected_result: Expected authentication behavior is observed for scenario 130
+- id: SEC-131
+  category: profile
+  name: Test SEC Profile Functionality 131
+  priority: medium
+  description: Verify profile functionality scenario 131
+  expected_result: Expected profile behavior is observed for scenario 131
+- id: SEC-132
+  category: hospital
+  name: Test SEC Hospital Functionality 132
+  priority: medium
+  description: Verify hospital functionality scenario 132
+  expected_result: Expected hospital behavior is observed for scenario 132
+- id: SEC-133
+  category: skincare
+  name: Test SEC Skincare Functionality 133
+  priority: medium
+  description: Verify skincare functionality scenario 133
+  expected_result: Expected skincare behavior is observed for scenario 133
+- id: SEC-134
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 134
+  priority: medium
+  description: Verify skin_analysis functionality scenario 134
+  expected_result: Expected skin_analysis behavior is observed for scenario 134
+- id: SEC-135
+  category: report
+  name: Test SEC Report Functionality 135
+  priority: high
+  description: Verify report functionality scenario 135
+  expected_result: Expected report behavior is observed for scenario 135
+- id: SEC-136
+  category: store
+  name: Test SEC Store Functionality 136
+  priority: medium
+  description: Verify store functionality scenario 136
+  expected_result: Expected store behavior is observed for scenario 136
+- id: SEC-137
+  category: predict
+  name: Test SEC Predict Functionality 137
+  priority: medium
+  description: Verify predict functionality scenario 137
+  expected_result: Expected predict behavior is observed for scenario 137
+- id: SEC-138
+  category: navigation
+  name: Test SEC Navigation Functionality 138
+  priority: medium
+  description: Verify navigation functionality scenario 138
+  expected_result: Expected navigation behavior is observed for scenario 138
+- id: SEC-139
+  category: crud
+  name: Test SEC Crud Functionality 139
+  priority: medium
+  description: Verify crud functionality scenario 139
+  expected_result: Expected crud behavior is observed for scenario 139
+- id: SEC-140
+  category: authentication
+  name: Test SEC Authentication Functionality 140
+  priority: critical
+  description: Verify authentication functionality scenario 140
+  expected_result: Expected authentication behavior is observed for scenario 140
+- id: SEC-141
+  category: profile
+  name: Test SEC Profile Functionality 141
+  priority: medium
+  description: Verify profile functionality scenario 141
+  expected_result: Expected profile behavior is observed for scenario 141
+- id: SEC-142
+  category: hospital
+  name: Test SEC Hospital Functionality 142
+  priority: medium
+  description: Verify hospital functionality scenario 142
+  expected_result: Expected hospital behavior is observed for scenario 142
+- id: SEC-143
+  category: skincare
+  name: Test SEC Skincare Functionality 143
+  priority: medium
+  description: Verify skincare functionality scenario 143
+  expected_result: Expected skincare behavior is observed for scenario 143
+- id: SEC-144
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 144
+  priority: medium
+  description: Verify skin_analysis functionality scenario 144
+  expected_result: Expected skin_analysis behavior is observed for scenario 144
+- id: SEC-145
+  category: report
+  name: Test SEC Report Functionality 145
+  priority: high
+  description: Verify report functionality scenario 145
+  expected_result: Expected report behavior is observed for scenario 145
+- id: SEC-146
+  category: store
+  name: Test SEC Store Functionality 146
+  priority: medium
+  description: Verify store functionality scenario 146
+  expected_result: Expected store behavior is observed for scenario 146
+- id: SEC-147
+  category: predict
+  name: Test SEC Predict Functionality 147
+  priority: medium
+  description: Verify predict functionality scenario 147
+  expected_result: Expected predict behavior is observed for scenario 147
+- id: SEC-148
+  category: navigation
+  name: Test SEC Navigation Functionality 148
+  priority: medium
+  description: Verify navigation functionality scenario 148
+  expected_result: Expected navigation behavior is observed for scenario 148
+- id: SEC-149
+  category: crud
+  name: Test SEC Crud Functionality 149
+  priority: medium
+  description: Verify crud functionality scenario 149
+  expected_result: Expected crud behavior is observed for scenario 149
+- id: SEC-150
+  category: authentication
+  name: Test SEC Authentication Functionality 150
+  priority: critical
+  description: Verify authentication functionality scenario 150
+  expected_result: Expected authentication behavior is observed for scenario 150
+- id: SEC-151
+  category: profile
+  name: Test SEC Profile Functionality 151
+  priority: medium
+  description: Verify profile functionality scenario 151
+  expected_result: Expected profile behavior is observed for scenario 151
+- id: SEC-152
+  category: hospital
+  name: Test SEC Hospital Functionality 152
+  priority: medium
+  description: Verify hospital functionality scenario 152
+  expected_result: Expected hospital behavior is observed for scenario 152
+- id: SEC-153
+  category: skincare
+  name: Test SEC Skincare Functionality 153
+  priority: medium
+  description: Verify skincare functionality scenario 153
+  expected_result: Expected skincare behavior is observed for scenario 153
+- id: SEC-154
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 154
+  priority: medium
+  description: Verify skin_analysis functionality scenario 154
+  expected_result: Expected skin_analysis behavior is observed for scenario 154
+- id: SEC-155
+  category: report
+  name: Test SEC Report Functionality 155
+  priority: high
+  description: Verify report functionality scenario 155
+  expected_result: Expected report behavior is observed for scenario 155
+- id: SEC-156
+  category: store
+  name: Test SEC Store Functionality 156
+  priority: medium
+  description: Verify store functionality scenario 156
+  expected_result: Expected store behavior is observed for scenario 156
+- id: SEC-157
+  category: predict
+  name: Test SEC Predict Functionality 157
+  priority: medium
+  description: Verify predict functionality scenario 157
+  expected_result: Expected predict behavior is observed for scenario 157
+- id: SEC-158
+  category: navigation
+  name: Test SEC Navigation Functionality 158
+  priority: medium
+  description: Verify navigation functionality scenario 158
+  expected_result: Expected navigation behavior is observed for scenario 158
+- id: SEC-159
+  category: crud
+  name: Test SEC Crud Functionality 159
+  priority: medium
+  description: Verify crud functionality scenario 159
+  expected_result: Expected crud behavior is observed for scenario 159
+- id: SEC-160
+  category: authentication
+  name: Test SEC Authentication Functionality 160
+  priority: critical
+  description: Verify authentication functionality scenario 160
+  expected_result: Expected authentication behavior is observed for scenario 160
+- id: SEC-161
+  category: profile
+  name: Test SEC Profile Functionality 161
+  priority: medium
+  description: Verify profile functionality scenario 161
+  expected_result: Expected profile behavior is observed for scenario 161
+- id: SEC-162
+  category: hospital
+  name: Test SEC Hospital Functionality 162
+  priority: medium
+  description: Verify hospital functionality scenario 162
+  expected_result: Expected hospital behavior is observed for scenario 162
+- id: SEC-163
+  category: skincare
+  name: Test SEC Skincare Functionality 163
+  priority: medium
+  description: Verify skincare functionality scenario 163
+  expected_result: Expected skincare behavior is observed for scenario 163
+- id: SEC-164
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 164
+  priority: medium
+  description: Verify skin_analysis functionality scenario 164
+  expected_result: Expected skin_analysis behavior is observed for scenario 164
+- id: SEC-165
+  category: report
+  name: Test SEC Report Functionality 165
+  priority: high
+  description: Verify report functionality scenario 165
+  expected_result: Expected report behavior is observed for scenario 165
+- id: SEC-166
+  category: store
+  name: Test SEC Store Functionality 166
+  priority: medium
+  description: Verify store functionality scenario 166
+  expected_result: Expected store behavior is observed for scenario 166
+- id: SEC-167
+  category: predict
+  name: Test SEC Predict Functionality 167
+  priority: medium
+  description: Verify predict functionality scenario 167
+  expected_result: Expected predict behavior is observed for scenario 167
+- id: SEC-168
+  category: navigation
+  name: Test SEC Navigation Functionality 168
+  priority: medium
+  description: Verify navigation functionality scenario 168
+  expected_result: Expected navigation behavior is observed for scenario 168
+- id: SEC-169
+  category: crud
+  name: Test SEC Crud Functionality 169
+  priority: medium
+  description: Verify crud functionality scenario 169
+  expected_result: Expected crud behavior is observed for scenario 169
+- id: SEC-170
+  category: authentication
+  name: Test SEC Authentication Functionality 170
+  priority: critical
+  description: Verify authentication functionality scenario 170
+  expected_result: Expected authentication behavior is observed for scenario 170
+- id: SEC-171
+  category: profile
+  name: Test SEC Profile Functionality 171
+  priority: medium
+  description: Verify profile functionality scenario 171
+  expected_result: Expected profile behavior is observed for scenario 171
+- id: SEC-172
+  category: hospital
+  name: Test SEC Hospital Functionality 172
+  priority: medium
+  description: Verify hospital functionality scenario 172
+  expected_result: Expected hospital behavior is observed for scenario 172
+- id: SEC-173
+  category: skincare
+  name: Test SEC Skincare Functionality 173
+  priority: medium
+  description: Verify skincare functionality scenario 173
+  expected_result: Expected skincare behavior is observed for scenario 173
+- id: SEC-174
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 174
+  priority: medium
+  description: Verify skin_analysis functionality scenario 174
+  expected_result: Expected skin_analysis behavior is observed for scenario 174
+- id: SEC-175
+  category: report
+  name: Test SEC Report Functionality 175
+  priority: high
+  description: Verify report functionality scenario 175
+  expected_result: Expected report behavior is observed for scenario 175
+- id: SEC-176
+  category: store
+  name: Test SEC Store Functionality 176
+  priority: medium
+  description: Verify store functionality scenario 176
+  expected_result: Expected store behavior is observed for scenario 176
+- id: SEC-177
+  category: predict
+  name: Test SEC Predict Functionality 177
+  priority: medium
+  description: Verify predict functionality scenario 177
+  expected_result: Expected predict behavior is observed for scenario 177
+- id: SEC-178
+  category: navigation
+  name: Test SEC Navigation Functionality 178
+  priority: medium
+  description: Verify navigation functionality scenario 178
+  expected_result: Expected navigation behavior is observed for scenario 178
+- id: SEC-179
+  category: crud
+  name: Test SEC Crud Functionality 179
+  priority: medium
+  description: Verify crud functionality scenario 179
+  expected_result: Expected crud behavior is observed for scenario 179
+- id: SEC-180
+  category: authentication
+  name: Test SEC Authentication Functionality 180
+  priority: critical
+  description: Verify authentication functionality scenario 180
+  expected_result: Expected authentication behavior is observed for scenario 180
+- id: SEC-181
+  category: profile
+  name: Test SEC Profile Functionality 181
+  priority: medium
+  description: Verify profile functionality scenario 181
+  expected_result: Expected profile behavior is observed for scenario 181
+- id: SEC-182
+  category: hospital
+  name: Test SEC Hospital Functionality 182
+  priority: medium
+  description: Verify hospital functionality scenario 182
+  expected_result: Expected hospital behavior is observed for scenario 182
+- id: SEC-183
+  category: skincare
+  name: Test SEC Skincare Functionality 183
+  priority: medium
+  description: Verify skincare functionality scenario 183
+  expected_result: Expected skincare behavior is observed for scenario 183
+- id: SEC-184
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 184
+  priority: medium
+  description: Verify skin_analysis functionality scenario 184
+  expected_result: Expected skin_analysis behavior is observed for scenario 184
+- id: SEC-185
+  category: report
+  name: Test SEC Report Functionality 185
+  priority: high
+  description: Verify report functionality scenario 185
+  expected_result: Expected report behavior is observed for scenario 185
+- id: SEC-186
+  category: store
+  name: Test SEC Store Functionality 186
+  priority: medium
+  description: Verify store functionality scenario 186
+  expected_result: Expected store behavior is observed for scenario 186
+- id: SEC-187
+  category: predict
+  name: Test SEC Predict Functionality 187
+  priority: medium
+  description: Verify predict functionality scenario 187
+  expected_result: Expected predict behavior is observed for scenario 187
+- id: SEC-188
+  category: navigation
+  name: Test SEC Navigation Functionality 188
+  priority: medium
+  description: Verify navigation functionality scenario 188
+  expected_result: Expected navigation behavior is observed for scenario 188
+- id: SEC-189
+  category: crud
+  name: Test SEC Crud Functionality 189
+  priority: medium
+  description: Verify crud functionality scenario 189
+  expected_result: Expected crud behavior is observed for scenario 189
+- id: SEC-190
+  category: authentication
+  name: Test SEC Authentication Functionality 190
+  priority: critical
+  description: Verify authentication functionality scenario 190
+  expected_result: Expected authentication behavior is observed for scenario 190
+- id: SEC-191
+  category: profile
+  name: Test SEC Profile Functionality 191
+  priority: medium
+  description: Verify profile functionality scenario 191
+  expected_result: Expected profile behavior is observed for scenario 191
+- id: SEC-192
+  category: hospital
+  name: Test SEC Hospital Functionality 192
+  priority: medium
+  description: Verify hospital functionality scenario 192
+  expected_result: Expected hospital behavior is observed for scenario 192
+- id: SEC-193
+  category: skincare
+  name: Test SEC Skincare Functionality 193
+  priority: medium
+  description: Verify skincare functionality scenario 193
+  expected_result: Expected skincare behavior is observed for scenario 193
+- id: SEC-194
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 194
+  priority: medium
+  description: Verify skin_analysis functionality scenario 194
+  expected_result: Expected skin_analysis behavior is observed for scenario 194
+- id: SEC-195
+  category: report
+  name: Test SEC Report Functionality 195
+  priority: high
+  description: Verify report functionality scenario 195
+  expected_result: Expected report behavior is observed for scenario 195
+- id: SEC-196
+  category: store
+  name: Test SEC Store Functionality 196
+  priority: medium
+  description: Verify store functionality scenario 196
+  expected_result: Expected store behavior is observed for scenario 196
+- id: SEC-197
+  category: predict
+  name: Test SEC Predict Functionality 197
+  priority: medium
+  description: Verify predict functionality scenario 197
+  expected_result: Expected predict behavior is observed for scenario 197
+- id: SEC-198
+  category: navigation
+  name: Test SEC Navigation Functionality 198
+  priority: medium
+  description: Verify navigation functionality scenario 198
+  expected_result: Expected navigation behavior is observed for scenario 198
+- id: SEC-199
+  category: crud
+  name: Test SEC Crud Functionality 199
+  priority: medium
+  description: Verify crud functionality scenario 199
+  expected_result: Expected crud behavior is observed for scenario 199
+- id: SEC-200
+  category: authentication
+  name: Test SEC Authentication Functionality 200
+  priority: critical
+  description: Verify authentication functionality scenario 200
+  expected_result: Expected authentication behavior is observed for scenario 200
+- id: SEC-201
+  category: profile
+  name: Test SEC Profile Functionality 201
+  priority: medium
+  description: Verify profile functionality scenario 201
+  expected_result: Expected profile behavior is observed for scenario 201
+- id: SEC-202
+  category: hospital
+  name: Test SEC Hospital Functionality 202
+  priority: medium
+  description: Verify hospital functionality scenario 202
+  expected_result: Expected hospital behavior is observed for scenario 202
+- id: SEC-203
+  category: skincare
+  name: Test SEC Skincare Functionality 203
+  priority: medium
+  description: Verify skincare functionality scenario 203
+  expected_result: Expected skincare behavior is observed for scenario 203
+- id: SEC-204
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 204
+  priority: medium
+  description: Verify skin_analysis functionality scenario 204
+  expected_result: Expected skin_analysis behavior is observed for scenario 204
+- id: SEC-205
+  category: report
+  name: Test SEC Report Functionality 205
+  priority: high
+  description: Verify report functionality scenario 205
+  expected_result: Expected report behavior is observed for scenario 205
+- id: SEC-206
+  category: store
+  name: Test SEC Store Functionality 206
+  priority: medium
+  description: Verify store functionality scenario 206
+  expected_result: Expected store behavior is observed for scenario 206
+- id: SEC-207
+  category: predict
+  name: Test SEC Predict Functionality 207
+  priority: medium
+  description: Verify predict functionality scenario 207
+  expected_result: Expected predict behavior is observed for scenario 207
+- id: SEC-208
+  category: navigation
+  name: Test SEC Navigation Functionality 208
+  priority: medium
+  description: Verify navigation functionality scenario 208
+  expected_result: Expected navigation behavior is observed for scenario 208
+- id: SEC-209
+  category: crud
+  name: Test SEC Crud Functionality 209
+  priority: medium
+  description: Verify crud functionality scenario 209
+  expected_result: Expected crud behavior is observed for scenario 209
+- id: SEC-210
+  category: authentication
+  name: Test SEC Authentication Functionality 210
+  priority: critical
+  description: Verify authentication functionality scenario 210
+  expected_result: Expected authentication behavior is observed for scenario 210
+- id: SEC-211
+  category: profile
+  name: Test SEC Profile Functionality 211
+  priority: medium
+  description: Verify profile functionality scenario 211
+  expected_result: Expected profile behavior is observed for scenario 211
+- id: SEC-212
+  category: hospital
+  name: Test SEC Hospital Functionality 212
+  priority: medium
+  description: Verify hospital functionality scenario 212
+  expected_result: Expected hospital behavior is observed for scenario 212
+- id: SEC-213
+  category: skincare
+  name: Test SEC Skincare Functionality 213
+  priority: medium
+  description: Verify skincare functionality scenario 213
+  expected_result: Expected skincare behavior is observed for scenario 213
+- id: SEC-214
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 214
+  priority: medium
+  description: Verify skin_analysis functionality scenario 214
+  expected_result: Expected skin_analysis behavior is observed for scenario 214
+- id: SEC-215
+  category: report
+  name: Test SEC Report Functionality 215
+  priority: high
+  description: Verify report functionality scenario 215
+  expected_result: Expected report behavior is observed for scenario 215
+- id: SEC-216
+  category: store
+  name: Test SEC Store Functionality 216
+  priority: medium
+  description: Verify store functionality scenario 216
+  expected_result: Expected store behavior is observed for scenario 216
+- id: SEC-217
+  category: predict
+  name: Test SEC Predict Functionality 217
+  priority: medium
+  description: Verify predict functionality scenario 217
+  expected_result: Expected predict behavior is observed for scenario 217
+- id: SEC-218
+  category: navigation
+  name: Test SEC Navigation Functionality 218
+  priority: medium
+  description: Verify navigation functionality scenario 218
+  expected_result: Expected navigation behavior is observed for scenario 218
+- id: SEC-219
+  category: crud
+  name: Test SEC Crud Functionality 219
+  priority: medium
+  description: Verify crud functionality scenario 219
+  expected_result: Expected crud behavior is observed for scenario 219
+- id: SEC-220
+  category: authentication
+  name: Test SEC Authentication Functionality 220
+  priority: critical
+  description: Verify authentication functionality scenario 220
+  expected_result: Expected authentication behavior is observed for scenario 220
+- id: SEC-221
+  category: profile
+  name: Test SEC Profile Functionality 221
+  priority: medium
+  description: Verify profile functionality scenario 221
+  expected_result: Expected profile behavior is observed for scenario 221
+- id: SEC-222
+  category: hospital
+  name: Test SEC Hospital Functionality 222
+  priority: medium
+  description: Verify hospital functionality scenario 222
+  expected_result: Expected hospital behavior is observed for scenario 222
+- id: SEC-223
+  category: skincare
+  name: Test SEC Skincare Functionality 223
+  priority: medium
+  description: Verify skincare functionality scenario 223
+  expected_result: Expected skincare behavior is observed for scenario 223
+- id: SEC-224
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 224
+  priority: medium
+  description: Verify skin_analysis functionality scenario 224
+  expected_result: Expected skin_analysis behavior is observed for scenario 224
+- id: SEC-225
+  category: report
+  name: Test SEC Report Functionality 225
+  priority: high
+  description: Verify report functionality scenario 225
+  expected_result: Expected report behavior is observed for scenario 225
+- id: SEC-226
+  category: store
+  name: Test SEC Store Functionality 226
+  priority: medium
+  description: Verify store functionality scenario 226
+  expected_result: Expected store behavior is observed for scenario 226
+- id: SEC-227
+  category: predict
+  name: Test SEC Predict Functionality 227
+  priority: medium
+  description: Verify predict functionality scenario 227
+  expected_result: Expected predict behavior is observed for scenario 227
+- id: SEC-228
+  category: navigation
+  name: Test SEC Navigation Functionality 228
+  priority: medium
+  description: Verify navigation functionality scenario 228
+  expected_result: Expected navigation behavior is observed for scenario 228
+- id: SEC-229
+  category: crud
+  name: Test SEC Crud Functionality 229
+  priority: medium
+  description: Verify crud functionality scenario 229
+  expected_result: Expected crud behavior is observed for scenario 229
+- id: SEC-230
+  category: authentication
+  name: Test SEC Authentication Functionality 230
+  priority: critical
+  description: Verify authentication functionality scenario 230
+  expected_result: Expected authentication behavior is observed for scenario 230
+- id: SEC-231
+  category: profile
+  name: Test SEC Profile Functionality 231
+  priority: medium
+  description: Verify profile functionality scenario 231
+  expected_result: Expected profile behavior is observed for scenario 231
+- id: SEC-232
+  category: hospital
+  name: Test SEC Hospital Functionality 232
+  priority: medium
+  description: Verify hospital functionality scenario 232
+  expected_result: Expected hospital behavior is observed for scenario 232
+- id: SEC-233
+  category: skincare
+  name: Test SEC Skincare Functionality 233
+  priority: medium
+  description: Verify skincare functionality scenario 233
+  expected_result: Expected skincare behavior is observed for scenario 233
+- id: SEC-234
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 234
+  priority: medium
+  description: Verify skin_analysis functionality scenario 234
+  expected_result: Expected skin_analysis behavior is observed for scenario 234
+- id: SEC-235
+  category: report
+  name: Test SEC Report Functionality 235
+  priority: high
+  description: Verify report functionality scenario 235
+  expected_result: Expected report behavior is observed for scenario 235
+- id: SEC-236
+  category: store
+  name: Test SEC Store Functionality 236
+  priority: medium
+  description: Verify store functionality scenario 236
+  expected_result: Expected store behavior is observed for scenario 236
+- id: SEC-237
+  category: predict
+  name: Test SEC Predict Functionality 237
+  priority: medium
+  description: Verify predict functionality scenario 237
+  expected_result: Expected predict behavior is observed for scenario 237
+- id: SEC-238
+  category: navigation
+  name: Test SEC Navigation Functionality 238
+  priority: medium
+  description: Verify navigation functionality scenario 238
+  expected_result: Expected navigation behavior is observed for scenario 238
+- id: SEC-239
+  category: crud
+  name: Test SEC Crud Functionality 239
+  priority: medium
+  description: Verify crud functionality scenario 239
+  expected_result: Expected crud behavior is observed for scenario 239
+- id: SEC-240
+  category: authentication
+  name: Test SEC Authentication Functionality 240
+  priority: critical
+  description: Verify authentication functionality scenario 240
+  expected_result: Expected authentication behavior is observed for scenario 240
+- id: SEC-241
+  category: profile
+  name: Test SEC Profile Functionality 241
+  priority: medium
+  description: Verify profile functionality scenario 241
+  expected_result: Expected profile behavior is observed for scenario 241
+- id: SEC-242
+  category: hospital
+  name: Test SEC Hospital Functionality 242
+  priority: medium
+  description: Verify hospital functionality scenario 242
+  expected_result: Expected hospital behavior is observed for scenario 242
+- id: SEC-243
+  category: skincare
+  name: Test SEC Skincare Functionality 243
+  priority: medium
+  description: Verify skincare functionality scenario 243
+  expected_result: Expected skincare behavior is observed for scenario 243
+- id: SEC-244
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 244
+  priority: medium
+  description: Verify skin_analysis functionality scenario 244
+  expected_result: Expected skin_analysis behavior is observed for scenario 244
+- id: SEC-245
+  category: report
+  name: Test SEC Report Functionality 245
+  priority: high
+  description: Verify report functionality scenario 245
+  expected_result: Expected report behavior is observed for scenario 245
+- id: SEC-246
+  category: store
+  name: Test SEC Store Functionality 246
+  priority: medium
+  description: Verify store functionality scenario 246
+  expected_result: Expected store behavior is observed for scenario 246
+- id: SEC-247
+  category: predict
+  name: Test SEC Predict Functionality 247
+  priority: medium
+  description: Verify predict functionality scenario 247
+  expected_result: Expected predict behavior is observed for scenario 247
+- id: SEC-248
+  category: navigation
+  name: Test SEC Navigation Functionality 248
+  priority: medium
+  description: Verify navigation functionality scenario 248
+  expected_result: Expected navigation behavior is observed for scenario 248
+- id: SEC-249
+  category: crud
+  name: Test SEC Crud Functionality 249
+  priority: medium
+  description: Verify crud functionality scenario 249
+  expected_result: Expected crud behavior is observed for scenario 249
+- id: SEC-250
+  category: authentication
+  name: Test SEC Authentication Functionality 250
+  priority: critical
+  description: Verify authentication functionality scenario 250
+  expected_result: Expected authentication behavior is observed for scenario 250
+- id: SEC-251
+  category: profile
+  name: Test SEC Profile Functionality 251
+  priority: medium
+  description: Verify profile functionality scenario 251
+  expected_result: Expected profile behavior is observed for scenario 251
+- id: SEC-252
+  category: hospital
+  name: Test SEC Hospital Functionality 252
+  priority: medium
+  description: Verify hospital functionality scenario 252
+  expected_result: Expected hospital behavior is observed for scenario 252
+- id: SEC-253
+  category: skincare
+  name: Test SEC Skincare Functionality 253
+  priority: medium
+  description: Verify skincare functionality scenario 253
+  expected_result: Expected skincare behavior is observed for scenario 253
+- id: SEC-254
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 254
+  priority: medium
+  description: Verify skin_analysis functionality scenario 254
+  expected_result: Expected skin_analysis behavior is observed for scenario 254
+- id: SEC-255
+  category: report
+  name: Test SEC Report Functionality 255
+  priority: high
+  description: Verify report functionality scenario 255
+  expected_result: Expected report behavior is observed for scenario 255
+- id: SEC-256
+  category: store
+  name: Test SEC Store Functionality 256
+  priority: medium
+  description: Verify store functionality scenario 256
+  expected_result: Expected store behavior is observed for scenario 256
+- id: SEC-257
+  category: predict
+  name: Test SEC Predict Functionality 257
+  priority: medium
+  description: Verify predict functionality scenario 257
+  expected_result: Expected predict behavior is observed for scenario 257
+- id: SEC-258
+  category: navigation
+  name: Test SEC Navigation Functionality 258
+  priority: medium
+  description: Verify navigation functionality scenario 258
+  expected_result: Expected navigation behavior is observed for scenario 258
+- id: SEC-259
+  category: crud
+  name: Test SEC Crud Functionality 259
+  priority: medium
+  description: Verify crud functionality scenario 259
+  expected_result: Expected crud behavior is observed for scenario 259
+- id: SEC-260
+  category: authentication
+  name: Test SEC Authentication Functionality 260
+  priority: critical
+  description: Verify authentication functionality scenario 260
+  expected_result: Expected authentication behavior is observed for scenario 260
+- id: SEC-261
+  category: profile
+  name: Test SEC Profile Functionality 261
+  priority: medium
+  description: Verify profile functionality scenario 261
+  expected_result: Expected profile behavior is observed for scenario 261
+- id: SEC-262
+  category: hospital
+  name: Test SEC Hospital Functionality 262
+  priority: medium
+  description: Verify hospital functionality scenario 262
+  expected_result: Expected hospital behavior is observed for scenario 262
+- id: SEC-263
+  category: skincare
+  name: Test SEC Skincare Functionality 263
+  priority: medium
+  description: Verify skincare functionality scenario 263
+  expected_result: Expected skincare behavior is observed for scenario 263
+- id: SEC-264
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 264
+  priority: medium
+  description: Verify skin_analysis functionality scenario 264
+  expected_result: Expected skin_analysis behavior is observed for scenario 264
+- id: SEC-265
+  category: report
+  name: Test SEC Report Functionality 265
+  priority: high
+  description: Verify report functionality scenario 265
+  expected_result: Expected report behavior is observed for scenario 265
+- id: SEC-266
+  category: store
+  name: Test SEC Store Functionality 266
+  priority: medium
+  description: Verify store functionality scenario 266
+  expected_result: Expected store behavior is observed for scenario 266
+- id: SEC-267
+  category: predict
+  name: Test SEC Predict Functionality 267
+  priority: medium
+  description: Verify predict functionality scenario 267
+  expected_result: Expected predict behavior is observed for scenario 267
+- id: SEC-268
+  category: navigation
+  name: Test SEC Navigation Functionality 268
+  priority: medium
+  description: Verify navigation functionality scenario 268
+  expected_result: Expected navigation behavior is observed for scenario 268
+- id: SEC-269
+  category: crud
+  name: Test SEC Crud Functionality 269
+  priority: medium
+  description: Verify crud functionality scenario 269
+  expected_result: Expected crud behavior is observed for scenario 269
+- id: SEC-270
+  category: authentication
+  name: Test SEC Authentication Functionality 270
+  priority: critical
+  description: Verify authentication functionality scenario 270
+  expected_result: Expected authentication behavior is observed for scenario 270
+- id: SEC-271
+  category: profile
+  name: Test SEC Profile Functionality 271
+  priority: medium
+  description: Verify profile functionality scenario 271
+  expected_result: Expected profile behavior is observed for scenario 271
+- id: SEC-272
+  category: hospital
+  name: Test SEC Hospital Functionality 272
+  priority: medium
+  description: Verify hospital functionality scenario 272
+  expected_result: Expected hospital behavior is observed for scenario 272
+- id: SEC-273
+  category: skincare
+  name: Test SEC Skincare Functionality 273
+  priority: medium
+  description: Verify skincare functionality scenario 273
+  expected_result: Expected skincare behavior is observed for scenario 273
+- id: SEC-274
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 274
+  priority: medium
+  description: Verify skin_analysis functionality scenario 274
+  expected_result: Expected skin_analysis behavior is observed for scenario 274
+- id: SEC-275
+  category: report
+  name: Test SEC Report Functionality 275
+  priority: high
+  description: Verify report functionality scenario 275
+  expected_result: Expected report behavior is observed for scenario 275
+- id: SEC-276
+  category: store
+  name: Test SEC Store Functionality 276
+  priority: medium
+  description: Verify store functionality scenario 276
+  expected_result: Expected store behavior is observed for scenario 276
+- id: SEC-277
+  category: predict
+  name: Test SEC Predict Functionality 277
+  priority: medium
+  description: Verify predict functionality scenario 277
+  expected_result: Expected predict behavior is observed for scenario 277
+- id: SEC-278
+  category: navigation
+  name: Test SEC Navigation Functionality 278
+  priority: medium
+  description: Verify navigation functionality scenario 278
+  expected_result: Expected navigation behavior is observed for scenario 278
+- id: SEC-279
+  category: crud
+  name: Test SEC Crud Functionality 279
+  priority: medium
+  description: Verify crud functionality scenario 279
+  expected_result: Expected crud behavior is observed for scenario 279
+- id: SEC-280
+  category: authentication
+  name: Test SEC Authentication Functionality 280
+  priority: critical
+  description: Verify authentication functionality scenario 280
+  expected_result: Expected authentication behavior is observed for scenario 280
+- id: SEC-281
+  category: profile
+  name: Test SEC Profile Functionality 281
+  priority: medium
+  description: Verify profile functionality scenario 281
+  expected_result: Expected profile behavior is observed for scenario 281
+- id: SEC-282
+  category: hospital
+  name: Test SEC Hospital Functionality 282
+  priority: medium
+  description: Verify hospital functionality scenario 282
+  expected_result: Expected hospital behavior is observed for scenario 282
+- id: SEC-283
+  category: skincare
+  name: Test SEC Skincare Functionality 283
+  priority: medium
+  description: Verify skincare functionality scenario 283
+  expected_result: Expected skincare behavior is observed for scenario 283
+- id: SEC-284
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 284
+  priority: medium
+  description: Verify skin_analysis functionality scenario 284
+  expected_result: Expected skin_analysis behavior is observed for scenario 284
+- id: SEC-285
+  category: report
+  name: Test SEC Report Functionality 285
+  priority: high
+  description: Verify report functionality scenario 285
+  expected_result: Expected report behavior is observed for scenario 285
+- id: SEC-286
+  category: store
+  name: Test SEC Store Functionality 286
+  priority: medium
+  description: Verify store functionality scenario 286
+  expected_result: Expected store behavior is observed for scenario 286
+- id: SEC-287
+  category: predict
+  name: Test SEC Predict Functionality 287
+  priority: medium
+  description: Verify predict functionality scenario 287
+  expected_result: Expected predict behavior is observed for scenario 287
+- id: SEC-288
+  category: navigation
+  name: Test SEC Navigation Functionality 288
+  priority: medium
+  description: Verify navigation functionality scenario 288
+  expected_result: Expected navigation behavior is observed for scenario 288
+- id: SEC-289
+  category: crud
+  name: Test SEC Crud Functionality 289
+  priority: medium
+  description: Verify crud functionality scenario 289
+  expected_result: Expected crud behavior is observed for scenario 289
+- id: SEC-290
+  category: authentication
+  name: Test SEC Authentication Functionality 290
+  priority: critical
+  description: Verify authentication functionality scenario 290
+  expected_result: Expected authentication behavior is observed for scenario 290
+- id: SEC-291
+  category: profile
+  name: Test SEC Profile Functionality 291
+  priority: medium
+  description: Verify profile functionality scenario 291
+  expected_result: Expected profile behavior is observed for scenario 291
+- id: SEC-292
+  category: hospital
+  name: Test SEC Hospital Functionality 292
+  priority: medium
+  description: Verify hospital functionality scenario 292
+  expected_result: Expected hospital behavior is observed for scenario 292
+- id: SEC-293
+  category: skincare
+  name: Test SEC Skincare Functionality 293
+  priority: medium
+  description: Verify skincare functionality scenario 293
+  expected_result: Expected skincare behavior is observed for scenario 293
+- id: SEC-294
+  category: skin_analysis
+  name: Test SEC Skin_analysis Functionality 294
+  priority: medium
+  description: Verify skin_analysis functionality scenario 294
+  expected_result: Expected skin_analysis behavior is observed for scenario 294
+- id: SEC-295
+  category: report
+  name: Test SEC Report Functionality 295
+  priority: high
+  description: Verify report functionality scenario 295
+  expected_result: Expected report behavior is observed for scenario 295
+- id: SEC-296
+  category: store
+  name: Test SEC Store Functionality 296
+  priority: medium
+  description: Verify store functionality scenario 296
+  expected_result: Expected store behavior is observed for scenario 296
+- id: SEC-297
+  category: predict
+  name: Test SEC Predict Functionality 297
+  priority: medium
+  description: Verify predict functionality scenario 297
+  expected_result: Expected predict behavior is observed for scenario 297
+- id: SEC-298
+  category: navigation
+  name: Test SEC Navigation Functionality 298
+  priority: medium
+  description: Verify navigation functionality scenario 298
+  expected_result: Expected navigation behavior is observed for scenario 298
+- id: SEC-299
+  category: crud
+  name: Test SEC Crud Functionality 299
+  priority: medium
+  description: Verify crud functionality scenario 299
+  expected_result: Expected crud behavior is observed for scenario 299
+- id: SEC-300
+  category: authentication
+  name: Test SEC Authentication Functionality 300
+  priority: critical
+  description: Verify authentication functionality scenario 300
+  expected_result: Expected authentication behavior is observed for scenario 300
