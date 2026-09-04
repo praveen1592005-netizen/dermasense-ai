@@ -4,7 +4,6 @@ import {
   LayoutDashboard,
   Sparkles,
   Activity,
-  ShoppingBag,
   TrendingUp,
   FileText,
   UserCheck,
@@ -38,11 +37,9 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ isOpen, onCl
     { label: 'Skincare Analysis', to: '/dashboard/skincare', icon: Sparkles },
     { label: 'Skin Disease Analysis', to: '/dashboard/disease', icon: Activity },
     { label: 'AI Chat Assistant', to: '/dashboard/chat', icon: MessageCircle, badge: 'New' },
-    { label: 'Products & Stores', to: '/dashboard/products', icon: ShoppingBag },
+
     { label: 'Skin Progress', to: '/dashboard/progress', icon: TrendingUp },
     { label: 'Smart Reports', to: '/dashboard/reports', icon: FileText },
-    { label: 'Membership & Plans', to: '/dashboard/membership', icon: CreditCard },
-    { label: 'My Coupons', to: '/dashboard/coupons', icon: Tag },
     { label: 'My Profile', to: '/dashboard/profile', icon: User },
     { label: 'Settings', to: '/dashboard/settings', icon: Settings },
   ];

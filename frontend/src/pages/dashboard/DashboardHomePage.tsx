@@ -21,11 +21,10 @@ import { PrimaryServiceCard } from '../../components/dashboard/PrimaryServiceCar
 import { StatusCard } from '../../components/dashboard/StatusCard';
 import { QuickActionCard } from '../../components/dashboard/QuickActionCard';
 import { analysisHistoryService } from '../../services/analysisHistoryService';
-import { membershipService } from '../../services/membershipService';
 import { reportService } from '../../services/reportService';
 
 export const DashboardHomePage: React.FC = () => {
-  const { user, isAadhaarVerified, triggerAadhaarVerification } = useAuth();
+  const { user } = useAuth();
   const greeting = getGreeting();
 
   const isProfileComplete = Boolean(user?.profile?.isProfileCompleted);
@@ -34,27 +33,19 @@ export const DashboardHomePage: React.FC = () => {
   // Real data state
   const [analysisCount, setAnalysisCount] = useState(0);
   const [reportCount, setReportCount] = useState(0);
-  const [membershipLabel, setMembershipLabel] = useState('Free Plan');
   const [latestSkinType, setLatestSkinType] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [analyses, subscription, reports] = await Promise.all([
+        const [analyses, reports] = await Promise.all([
           analysisHistoryService.getUserAnalyses(userId),
-          membershipService.getUserSubscription(userId),
           reportService.getReports(userId),
         ]);
 
         setAnalysisCount(analyses.length);
         setReportCount(reports.length);
 
-        const planMap: Record<string, string> = {
-          free: 'Free Plan',
-          premium: 'Premium Plan',
-          professional: 'Professional Plan',
-        };
-        setMembershipLabel(planMap[subscription.planId] || 'Free Plan');
 
         if (analyses.length > 0) {
           setLatestSkinType(analyses[0].detectedSkinType || null);
@@ -94,36 +85,6 @@ export const DashboardHomePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Identity Verification Security Banner if pending */}
-      {!isAadhaarVerified && (
-        <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-start sm:items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0">
-              <ShieldAlert className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                Identity Verification Pending
-                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300">
-                  Recommended
-                </span>
-              </h4>
-              <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed">
-                Verify your Aadhaar-linked identity to protect health records.
-              </p>
-            </div>
-          </div>
-          <Button
-            variant="gradient"
-            size="sm"
-            onClick={() => triggerAadhaarVerification()}
-            leftIcon={<ShieldCheck className="w-4 h-4" />}
-            className="flex-shrink-0"
-          >
-            Verify Now
-          </Button>
-        </div>
-      )}
 
       {/* TWO PRIMARY SERVICES */}
       <div>
@@ -200,19 +161,7 @@ export const DashboardHomePage: React.FC = () => {
             actionTo="/dashboard/skincare"
           />
 
-          <StatusCard
-            title="Membership"
-            value={membershipLabel}
-            statusType={membershipLabel !== 'Free Plan' ? 'success' : 'info'}
-            icon={CreditCard}
-            description={
-              membershipLabel !== 'Free Plan'
-                ? 'Premium features active on your account.'
-                : 'Upgrade to unlock advanced analysis and reports.'
-            }
-            actionText="Manage Membership"
-            actionTo="/dashboard/membership"
-          />
+
         </div>
       </div>
 
@@ -225,13 +174,6 @@ export const DashboardHomePage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <QuickActionCard
-            title="Product Recommendations"
-            description="Explore AI-matched products with multi-store pricing"
-            icon={ShoppingBag}
-            to="/dashboard/products"
-            color="brand"
-          />
           <QuickActionCard
             title="Skin Progress Tracking"
             description="Interactive before/after split slider & check-ins"
@@ -254,13 +196,7 @@ export const DashboardHomePage: React.FC = () => {
             to="/dashboard/reports"
             color="slate"
           />
-          <QuickActionCard
-            title="Membership & Plans"
-            description={`Current: ${membershipLabel}`}
-            icon={CreditCard}
-            to="/dashboard/membership"
-            color="slate"
-          />
+
           <QuickActionCard
             title="Profile Details"
             description="Update your skin type, age, and language"

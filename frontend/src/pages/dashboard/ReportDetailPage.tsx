@@ -23,6 +23,7 @@ import { useNotification } from '../../context/NotificationContext';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
+import { HospitalRecommendationSection } from '../../components/disease/HospitalRecommendationSection';
 import { Logo } from '../../components/common/Logo';
 import { ReportShareModal } from '../../components/reports/ReportShareModal';
 import { ReportDeleteModal } from '../../components/reports/ReportDeleteModal';
@@ -301,52 +302,8 @@ export const ReportDetailPage: React.FC = () => {
 
         {/* HIGH RISK WARNING & HOSPITAL LOCATOR */}
         {report.riskLevel?.toLowerCase() === 'high' && (
-          <div className="p-5 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 space-y-4">
-            <div className="flex items-start gap-3">
-              <ShieldAlert className="w-6 h-6 text-rose-600 flex-shrink-0 mt-0.5" />
-              <div className="space-y-1">
-                <h3 className="text-sm font-extrabold text-rose-900 dark:text-rose-200">
-                  ⚠️ Urgent Medical Attention Recommended
-                </h3>
-                <p className="text-xs sm:text-sm text-rose-800 dark:text-rose-300 leading-relaxed">
-                  This AI screening result may indicate a condition that requires professional medical evaluation. Please consult a qualified dermatologist or visit a dermatology hospital for proper examination.
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex flex-wrap gap-2 pt-2">
-              <Button 
-                variant="gradient" 
-                size="sm"
-                onClick={() => {
-                  /* Logic to show map or redirect to hospital finder */
-                  showSuccess("Hospital Map", "Opening Map to Find Nearby Hospitals...");
-                }}
-              >
-                Find Nearby Dermatology Hospitals
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => {
-                  window.open('https://maps.google.com/?q=dermatology+hospital+near+me', '_blank');
-                }}
-              >
-                View on Map
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => {
-                  window.open('https://maps.google.com/?q=dermatology+hospital+near+me', '_blank');
-                }}
-              >
-                Get Directions
-              </Button>
-            </div>
-          </div>
+          <HospitalRecommendationSection />
         )}
-
         {/* Mandatory Medical Safety Disclaimer */}
         <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-900/50 text-xs text-amber-900 dark:text-amber-200 space-y-1">
           <div className="flex items-center gap-1.5 font-bold">

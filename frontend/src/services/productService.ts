@@ -14,11 +14,11 @@ export const productService = {
       // Perform local filtering if backend doesn't support it yet
       if (filter) {
         if (filter.category && filter.category !== 'all') {
-          list = list.filter((p) => p.category.toLowerCase() === filter.category?.toLowerCase());
+          list = list.filter((p) => p.category?.toLowerCase() === filter.category?.toLowerCase());
         }
         if (filter.skinType && filter.skinType !== 'all') {
           list = list.filter((p) =>
-            p.skinTypes.some((st) => st.toLowerCase() === filter.skinType?.toLowerCase())
+            (p.skinTypes || []).some((st) => st.toLowerCase() === filter.skinType?.toLowerCase())
           );
         }
       }

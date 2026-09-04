@@ -37,6 +37,7 @@ async def analyze_skincare(
     
     # Image Validation
     image_path = None
+    image_bytes = None  # Initialize here to avoid NameError if no image is provided
     if image:
         content_type = image.content_type or ""
         if content_type not in ALLOWED_CONTENT_TYPES:
@@ -53,8 +54,7 @@ async def analyze_skincare(
             
         quality = _check_image_quality(img_array[0])
         if not quality["is_usable"]:
-            # Custom error message requested by user
-            return JSONResponse(status_code=400, content={"detail": "Please upload a clearer image.", "message": "Please upload a clearer image."})
+            return JSONResponse(status_code=400, content={"detail": quality["reason"], "message": quality["reason"]})
             
     try:
         meta_dict = json.loads(metadata)
@@ -64,7 +64,8 @@ async def analyze_skincare(
     result = await generate_skincare_routine(meta_dict)
     
     # Save Image to Supabase Storage if provided
-    user_id = user_dict.get("sub", "unknown_user")
+    # verify_token returns a supabase User object (not a dict), so we use .id
+    user_id = getattr(user_dict, "id", None) or getattr(user_dict, "sub", None) or "unknown_user"
     image_storage_path = None
     if image:
         image_storage_path = upload_skin_image(user_id, image.filename, image_bytes)

@@ -21,7 +21,13 @@ class SignupRequest(AuthRequest):
 async def signup(request: SignupRequest):
     try:
         client = get_supabase_client()
-        # 1. Sign up user in Supabase Auth
+        
+        # 1. Pre-check: Does user already exist?
+        existing_profile = client.table("profiles").select("id").eq("email", request.email).execute()
+        if existing_profile.data:
+            raise HTTPException(status_code=400, detail="User already registered")
+
+        # 2. Sign up user in Supabase Auth
         try:
             auth_res = client.auth.sign_up({
                 "email": request.email,
@@ -32,6 +38,25 @@ async def signup(request: SignupRequest):
                     }
                 }
             })
+            # Detect fake user returned by Supabase Email Enumeration Protection
+            is_fake_user = False
+            if auth_res.user and getattr(auth_res.user, 'identities', None) is not None:
+                if len(auth_res.user.identities) == 0:
+                    is_fake_user = True
+            
+            if is_fake_user:
+                # Edge case: User exists in auth.users but is signing up again.
+                # Try to log them in to recover their real auth.users ID.
+                try:
+                    login_res = client.auth.sign_in_with_password({
+                        "email": request.email,
+                        "password": request.password
+                    })
+                    auth_res = login_res
+                except Exception:
+                    # Wrong password, this is just a duplicate signup attempt
+                    raise Exception("User already registered")
+                    
         except Exception as e:
             if "rate limit" in str(e).lower() or "invalid" in str(e).lower():
                 # Fallback to admin creation to bypass rate limits

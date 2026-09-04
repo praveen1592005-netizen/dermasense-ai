@@ -17,14 +17,10 @@ import { DashboardHomePage } from '../pages/dashboard/DashboardHomePage';
 import { SkincareAnalysisPage } from '../pages/dashboard/SkincareAnalysisPage';
 import { SkincareResultsPage } from '../pages/dashboard/SkincareResultsPage';
 import { SkinDiseaseAnalysisPage } from '../pages/dashboard/SkinDiseaseAnalysisPage';
-import { ProductsPage } from '../pages/dashboard/ProductsPage';
-import { ProductDetailPage } from '../pages/dashboard/ProductDetailPage';
-import { ProductComparisonPage } from '../pages/dashboard/ProductComparisonPage';
+
 import { SkinProgressPage } from '../pages/dashboard/SkinProgressPage';
 import { ReportsPage } from '../pages/dashboard/ReportsPage';
 import { ReportDetailPage } from '../pages/dashboard/ReportDetailPage';
-import { MembershipPage } from '../pages/dashboard/MembershipPage';
-import { CouponsPage } from '../pages/dashboard/CouponsPage';
 import { ProfilePage } from '../pages/dashboard/ProfilePage';
 import { SettingsPage } from '../pages/dashboard/SettingsPage';
 import { AdminDashboardPage } from '../pages/admin/AdminDashboardPage';
@@ -84,29 +80,7 @@ export const AppRouter: React.FC = () => {
         <Route path=":analysisId" element={<SkinDiseaseAnalysisPage />} />
       </Route>
 
-      {/* Direct Products & Progress Shortcut Routes */}
-      <Route
-        path="/products"
-        element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<ProductsPage />} />
-        <Route path=":productId" element={<ProductDetailPage />} />
-      </Route>
-
-      <Route
-        path="/compare"
-        element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<ProductComparisonPage />} />
-      </Route>
+      {/* Direct Progress Shortcut Routes */}
 
       <Route
         path="/progress"
@@ -132,31 +106,6 @@ export const AppRouter: React.FC = () => {
         <Route path=":reportId" element={<ReportDetailPage />} />
       </Route>
 
-      {/* Direct Membership & Coupons Shortcut Routes */}
-      <Route
-        path="/membership"
-        element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<MembershipPage />} />
-      </Route>
-
-      <Route
-        path="/coupons"
-        element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<CouponsPage />} />
-      </Route>
-
-
-
       {/* Protected Dashboard Routes */}
       <Route
         path="/dashboard"
@@ -169,16 +118,12 @@ export const AppRouter: React.FC = () => {
         <Route index element={<DashboardHomePage />} />
         <Route path="skincare" element={<SkincareAnalysisPage />} />
         <Route path="skincare/:analysisId" element={<SkincareResultsPage />} />
-        <Route path="products" element={<ProductsPage />} />
-        <Route path="products/:productId" element={<ProductDetailPage />} />
-        <Route path="compare" element={<ProductComparisonPage />} />
+
         <Route path="progress" element={<SkinProgressPage />} />
         <Route path="disease" element={<SkinDiseaseAnalysisPage />} />
         <Route path="disease/:analysisId" element={<SkinDiseaseAnalysisPage />} />
         <Route path="reports" element={<ReportsPage />} />
         <Route path="reports/:reportId" element={<ReportDetailPage />} />
-        <Route path="membership" element={<MembershipPage />} />
-        <Route path="coupons" element={<CouponsPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="chat" element={<AIChatPage />} />

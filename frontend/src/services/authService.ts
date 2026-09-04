@@ -1,4 +1,4 @@
-import { User, SignInCredentials, SignUpCredentials, ResetPasswordRequest, VerifyPhoneOtpRequest } from '../types/auth';
+import { User, SignInCredentials, SignUpCredentials, ResetPasswordRequest } from '../types/auth';
 import { UserProfile } from '../types/user';
 import { apiClient } from './apiClient';
 import { supabase } from './supabaseClient';
@@ -112,13 +112,6 @@ export const authService = {
     return { success: true, message: response.message || `Reset link sent if an account exists for ${request.email}.` };
   },
 
-  async sendPhoneOtp(phoneNumber: string): Promise<{ success: boolean; otp: string; message: string }> {
-    return { success: true, otp: "123456", message: `Test OTP sent` };
-  },
-  
-  async verifyPhoneOtp(request: VerifyPhoneOtpRequest): Promise<User> {
-    throw new Error('Phone login is currently mocked. Please use email.');
-  },
 
   async signInWithGoogle(customUser?: any): Promise<User> {
     const { error } = await supabase.auth.signInWithOAuth({

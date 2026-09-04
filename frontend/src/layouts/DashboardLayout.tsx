@@ -4,18 +4,11 @@ import { DashboardSidebar } from '../components/dashboard/DashboardSidebar';
 import { DashboardNavbar } from '../components/dashboard/DashboardNavbar';
 import { MedicalDisclaimerBanner } from '../components/dashboard/MedicalDisclaimerBanner';
 import { GlobalChatWidget } from '../components/common/GlobalChatWidget';
-import { AadhaarVerificationModal } from '../components/auth/AadhaarVerificationModal';
 import { useAuth } from '../context/AuthContext';
 
 export const DashboardLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const {
-    user,
-    showAadhaarPrompt,
-    aadhaarPromptAction,
-    dismissAadhaarPrompt,
-    refreshAadhaarStatus,
-  } = useAuth();
+  const { user } = useAuth();
 
   const userId = user?.id || 'usr_guest';
 
@@ -42,19 +35,6 @@ export const DashboardLayout: React.FC = () => {
 
       {/* Global AI Chat Assistant Widget */}
       <GlobalChatWidget />
-
-      {/* Post-Login / Sensitive Action Aadhaar Verification Modal */}
-      <AadhaarVerificationModal
-        isOpen={showAadhaarPrompt}
-        onClose={dismissAadhaarPrompt}
-        onSkip={dismissAadhaarPrompt}
-        onSuccess={async () => {
-          await refreshAadhaarStatus();
-        }}
-        userId={userId}
-        isMandatoryForAction={Boolean(aadhaarPromptAction)}
-        actionName={aadhaarPromptAction}
-      />
     </div>
   );
 };

@@ -7,8 +7,8 @@ const getAuthToken = async () => {
   return session?.access_token || null;
 };
 
-const handleResponse = async (response: Response) => {
-  if (response.status === 401) {
+const handleResponse = async (response: Response, endpoint: string) => {
+  if (response.status === 401 && !endpoint.includes('/auth/login') && !endpoint.includes('/auth/signup')) {
     // Session expired or unauthorized
     await supabase.auth.signOut();
     window.dispatchEvent(new Event('auth:unauthorized'));
@@ -49,7 +49,7 @@ export const apiClient = {
         ...(await getHeaders(headers)),
       },
     });
-    return handleResponse(response);
+    return handleResponse(response, endpoint);
   },
   
   async post(endpoint: string, body: any, headers = {}) {
@@ -65,7 +65,7 @@ export const apiClient = {
       headers: requestHeaders,
       body: isFormData ? body : JSON.stringify(body),
     });
-    return handleResponse(response);
+    return handleResponse(response, endpoint);
   },
 
   async put(endpoint: string, body: any, headers = {}) {
@@ -81,7 +81,7 @@ export const apiClient = {
       headers: requestHeaders,
       body: isFormData ? body : JSON.stringify(body),
     });
-    return handleResponse(response);
+    return handleResponse(response, endpoint);
   },
 
   async delete(endpoint: string, headers = {}) {
@@ -92,6 +92,6 @@ export const apiClient = {
         ...(await getHeaders(headers)),
       },
     });
-    return handleResponse(response);
+    return handleResponse(response, endpoint);
   }
 };

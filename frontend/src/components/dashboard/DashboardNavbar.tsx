@@ -12,7 +12,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { ThemeToggle } from '../common/ThemeToggle';
-import { AadhaarSecurityBadge } from './AadhaarSecurityBadge';
+
 import { useAuth } from '../../context/AuthContext';
 import { useNotification } from '../../context/NotificationContext';
 
@@ -86,9 +86,7 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({ onToggleSideba
 
       {/* Right Section: Aadhaar Badge, Theme Toggle, Notifications, User Menu */}
       <div className="flex items-center gap-2.5 sm:gap-3.5">
-        <div className="hidden md:block">
-          <AadhaarSecurityBadge compact />
-        </div>
+
         <ThemeToggle size="md" />
 
         {/* Notifications Popover */}

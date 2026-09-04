@@ -32,8 +32,6 @@ from ai.predict import run_prediction
 from services.local_ai_service import explain_analysis_result, get_lifestyle_recommendations
 from services.supabase_service import upload_skin_image, save_analysis_result
 from dependencies.auth import verify_token
-from dependencies.membership import verify_membership_limits
-
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/skin", tags=["Skin Analysis"], dependencies=[Depends(verify_token)])
 
@@ -54,9 +52,6 @@ async def analyze_skin(
     Uses EfficientNetV2B2 for diagnosis + Ollama for explanation.
     The image model provides the prediction — Ollama only explains it.
     """
-    # ── Membership Limits ─────────────────────────────────────────────────────
-    verify_membership_limits(user_id)
-
     # ── File Type Validation ──────────────────────────────────────────────────
     content_type = image.content_type or ""
     if content_type not in ALLOWED_CONTENT_TYPES:

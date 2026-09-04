@@ -58,6 +58,7 @@ export const SkincareAnalysisPage: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [loadingStage, setLoadingStage] = useState<string>('Validating image resolution and lighting...');
   const [analysisResult, setAnalysisResult] = useState<DetailedSkincareAnalysis | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
 
   // Form Data with profile pre-fill (Phase 2 integration)
   const [formData, setFormData] = useState<SkincareAnalysisInput>({
@@ -139,6 +140,7 @@ export const SkincareAnalysisPage: React.FC = () => {
   };
 
   const handleStartAnalysis = async () => {
+    setIsAnalyzing(true);
     setCurrentStep(4);
     try {
       const result = await skincareAnalysisService.submitAnalysis(
@@ -155,6 +157,8 @@ export const SkincareAnalysisPage: React.FC = () => {
     } catch (err: any) {
       setCurrentStep(3);
       showError('Analysis Error', err.message || 'Failed to complete analysis.');
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -356,6 +360,7 @@ export const SkincareAnalysisPage: React.FC = () => {
                 formData={formData}
                 onEditStep={(step) => setCurrentStep(step)}
                 onSubmit={handleStartAnalysis}
+                isLoading={isAnalyzing}
               />
             </Card>
           )}

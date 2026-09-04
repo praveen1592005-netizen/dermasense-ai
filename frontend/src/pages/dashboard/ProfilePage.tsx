@@ -11,7 +11,7 @@ import { ProfileCompletion } from '../../components/profile/ProfileCompletion';
 import { PersonalInfoCard } from '../../components/profile/PersonalInfoCard';
 import { ContactInfoCard } from '../../components/profile/ContactInfoCard';
 import { SkinProfileCard } from '../../components/profile/SkinProfileCard';
-import { AadhaarInfoCard } from '../../components/profile/AadhaarInfoCard';
+
 import { ProfileHealthSnapshot } from '../../components/profile/ProfileHealthSnapshot';
 import { RecentActivityCard } from '../../components/profile/RecentActivityCard';
 import { AccountInfoCard } from '../../components/profile/AccountInfoCard';
@@ -117,7 +117,6 @@ export const ProfilePage: React.FC = () => {
           <PersonalInfoCard user={user} onEditClick={() => setEditModalOpen(true)} />
           <ContactInfoCard user={user} onEditClick={() => setEditModalOpen(true)} />
           <SkinProfileCard user={user} onEditClick={() => setEditModalOpen(true)} />
-          <AadhaarInfoCard aadhaar={user?.profile?.aadhaar} onEditClick={() => setEditModalOpen(true)} />
         </div>
 
         {/* Right Column: Status, Completion, Health Snapshot, Activity (5 cols) */}

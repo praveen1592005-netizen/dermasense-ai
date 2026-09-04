@@ -149,7 +149,24 @@ def _check_image_quality(img_array: np.ndarray, orig_width: int, orig_height: in
                 ),
             }
     except Exception as e:
-        logger.warning(f"Blur detection failed (non-critical): {e}")
+        logger.warning(f"Blur detection failed: {e}")
+
+    # 5. Skin detection heuristic: Red channel typically dominant in skin
+    r = img_array[:, :, 0]
+    g = img_array[:, :, 1]
+    b = img_array[:, :, 2]
+    
+    skin_pixels = np.logical_and(np.logical_and(r > g, r > b), r > 0.1)
+    skin_fraction = float(np.sum(skin_pixels)) / float(skin_pixels.size)
+    
+    if skin_fraction < 0.15:
+        return {
+            "ok": False,
+            "reason": (
+                "No skin or face detected. "
+                "Please upload a clear photo of the skin area to be analyzed."
+            ),
+        }
 
     return {"ok": True, "reason": "Image quality acceptable."}
 

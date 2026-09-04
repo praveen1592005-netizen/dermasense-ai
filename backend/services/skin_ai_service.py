@@ -129,6 +129,18 @@ def _check_image_quality(img_array: np.ndarray) -> dict:
     if std_dev < 0.02:  # Extremely low contrast = likely blank/solid image
         return {"is_usable": False, "reason": "Image has insufficient contrast for analysis. Please upload a clear skin photo."}
 
+    # Skin detection heuristic: In human skin (all ethnicities), Red channel is typically dominant due to melanin/hemoglobin
+    r = img_array[:, :, 0]
+    g = img_array[:, :, 1]
+    b = img_array[:, :, 2]
+    
+    # Check for pixels where R > G and R > B, and R is somewhat significant
+    skin_pixels = np.logical_and(np.logical_and(r > g, r > b), r > 0.1)
+    skin_fraction = float(np.sum(skin_pixels)) / float(skin_pixels.size)
+    
+    if skin_fraction < 0.15:
+        return {"is_usable": False, "reason": "No skin or face detected. Please upload a clear photo of your skin."}
+
     return {"is_usable": True, "reason": "Image quality acceptable."}
 
 

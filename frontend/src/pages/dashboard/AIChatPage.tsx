@@ -523,7 +523,7 @@ export const AIChatPage: React.FC = () => {
             variant="gradient"
             size="sm"
             className="w-full"
-            onClick={() => navigate('/dashboard/doctors')}
+            onClick={() => window.open('https://maps.google.com/?q=dermatologist+near+me', '_blank')}
           >
             Find a Dermatologist
           </Button>

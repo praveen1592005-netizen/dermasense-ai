@@ -124,24 +124,20 @@ app.add_middleware(
 from routers.skin_router import router as skin_router
 from routers.skincare_router import router as skincare_router
 from routers.ai_router import router as ai_router
-from routers.identity_router import router as identity_router
 from routers.predict_router import router as predict_router
 
 app.include_router(skin_router)
 app.include_router(skincare_router)
-app.include_router(identity_router)
 app.include_router(ai_router)
 app.include_router(predict_router)
 
-from routers import auth_router, profile_router, hospital_router, store_router, report_router, membership_router, payment_router, app_router
+from routers import auth_router, profile_router, hospital_router, store_router, report_router, app_router
 
 app.include_router(auth_router.router)
 app.include_router(profile_router.router)
 app.include_router(hospital_router.router)
 app.include_router(store_router.router)
 app.include_router(report_router.router)
-app.include_router(membership_router.router)
-app.include_router(payment_router.router)
 app.include_router(app_router.router)
 
 # ── Health Check ──────────────────────────────────────────────────────────────

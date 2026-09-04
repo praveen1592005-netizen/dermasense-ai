@@ -31,16 +31,6 @@ export interface SignUpCredentials {
   phone?: string;
 }
 
-export interface PhoneSignInRequest {
-  phoneNumber: string;
-}
-
-export interface VerifyPhoneOtpRequest {
-  phoneNumber: string;
-  otp: string;
-  rememberMe?: boolean;
-}
-
 export interface ResetPasswordRequest {
   email: string;
 }

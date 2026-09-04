@@ -34,12 +34,21 @@ KNOWLEDGE_BASE = {
         "• **General Care**: You may need to treat different areas differently. A gentle, balanced cleanser works well for the whole face.\n"
         "• **Helpful Ingredients**: Lightweight hydrating serums (like Hyaluronic Acid) all over, with spot treatments on the oily zones if needed."
     ),
-    "sensitive skin|redness|itching|rashes": (
+    "sensitive skin|redness|itching|rashes|rash at home": (
         "**Sensitive Skin & Irritation**\n\n"
         "Sensitive skin is prone to redness, itching, and stinging. It requires a minimalist, gentle approach.\n\n"
         "• **General Care**: Always patch-test new products. Stick to a simple routine: gentle cleanser, basic moisturizer, and mineral sunscreen.\n"
         "• **Helpful Ingredients**: Centella Asiatica (Cica), Panthenol (Vitamin B5), Aloe Vera, and Colloidal Oatmeal.\n"
         "• **Avoid**: Fragrances (even natural essential oils), harsh scrubs, and strong acids or retinoids unless directed by a doctor."
+    ),
+    "barrier|barrier tips|skin barrier": (
+        "**Skin Barrier Care Tips**\n\n"
+        "A healthy skin barrier retains moisture and protects against environmental irritants.\n\n"
+        "• **Cleanse Gently**: Use a mild, non-stripping cleanser. Avoid washing with hot water.\n"
+        "• **Moisturize**: Apply a fragrance-free moisturizer with ceramides and glycerin to lock in hydration.\n"
+        "• **Minimize Actives**: Avoid over-exfoliating or layering too many active ingredients (like high-strength AHAs or retinoids) if your skin feels sensitive.\n"
+        "• **Sun Protection**: Use a broad-spectrum mineral sunscreen daily to prevent further barrier damage.\n"
+        "• **When to Seek Help**: If your skin becomes persistently painful, very red, swollen, or irritated, consider seeing a dermatologist."
     ),
     "hyperpigmentation|dark spots": (
         "**Hyperpigmentation & Dark Spots**\n\n"
@@ -74,13 +83,13 @@ KNOWLEDGE_BASE = {
         "2. Targeted Treatment (e.g., Acne treatment or Retinol - optional)\n"
         "3. Moisturizer"
     ),
-    "general nutrition|lifestyle|sleep": (
+    "general nutrition|lifestyle|sleep|food|foods": (
         "**Lifestyle & Skin Health**\n\n"
         "Your lifestyle choices directly impact your skin's health and appearance.\n\n"
+        "• **Nutrition**: Anti-inflammatory foods (like berries, leafy greens, and omega-3 rich fish) can support skin recovery. Drink plenty of water.\n"
         "• **Sleep**: Aim for 7-9 hours. During sleep, your body repairs skin damage and produces collagen.\n"
-        "• **Nutrition**: Eat a balanced diet rich in antioxidants (fruits, vegetables), healthy fats (omega-3s in fish, walnuts), and lean proteins.\n"
-        "• **Hydration**: Drink plenty of water throughout the day.\n"
-        "• **Stress**: High stress increases cortisol, which can trigger acne breakouts and worsen conditions like eczema."
+        "• **Stress**: High stress increases cortisol, which can trigger acne breakouts and worsen conditions like eczema.\n"
+        "• **Avoid**: Excessive sugar and highly processed foods which can trigger inflammation."
     ),
     "when to consult a dermatologist|doctor": (
         "**When to See a Dermatologist**\n\n"
@@ -142,7 +151,7 @@ def _generate_fallback_response(user_message: str, analysis_context: Optional[di
     # 1. Search Knowledge Base
     for pattern, response_text in KNOWLEDGE_BASE.items():
         if re.search(pattern, msg):
-            return response_text + "\n\n*Note: This AI result is for screening and informational purposes only and is not a medical diagnosis. Please consult a qualified dermatologist or visit a dermatology hospital for proper examination.*"
+            return response_text + "\n\n*Note: This information is for educational purposes and is not a medical diagnosis. Please consult a qualified dermatologist for clinical decisions.*"
 
     condition = analysis_context.get("condition") if analysis_context else None
 
@@ -243,11 +252,123 @@ async def generate_skincare_routine(metadata: dict) -> dict:
             f"Based on your profile, you have {skin_type} skin.",
             f"Primary concerns: {', '.join(concerns) if concerns else 'General maintenance'}."
         ],
-        "morningRoutine": ["Gentle Cleanser", "Vitamin C Serum", "Moisturizer", "Sunscreen (SPF 30+)"],
-        "eveningRoutine": ["Double Cleanse", "Targeted Treatment", "Nourishing Moisturizer"],
-        "productCategories": ["Hydrating Cleansers", "Antioxidant Serums", "Barrier Creams"],
-        "lifestyleGuidance": ["Aim for 7-8 hours of sleep.", "Manage stress levels.", "Change pillowcases frequently."],
-        "nutritionGuidance": ["Drink 8 glasses of water daily.", "Eat foods rich in Omega-3 fatty acids."],
+        "morningRoutine": [
+            {
+                "stepNumber": 1,
+                "stepName": "Gentle Cleanser",
+                "category": "Cleansing",
+                "description": "Removes overnight sweat and oil without stripping the skin barrier.",
+                "recommendedFrequency": "Daily (AM)",
+                "keyIngredients": ["Glycerin", "Ceramides"]
+            },
+            {
+                "stepNumber": 2,
+                "stepName": "Vitamin C Serum",
+                "category": "Antioxidant",
+                "description": "Protects against environmental damage and brightens skin.",
+                "recommendedFrequency": "Daily (AM)",
+                "keyIngredients": ["L-Ascorbic Acid", "Vitamin E"]
+            },
+            {
+                "stepNumber": 3,
+                "stepName": "Moisturizer",
+                "category": "Hydration",
+                "description": "Locks in hydration and supports the skin barrier.",
+                "recommendedFrequency": "Daily (AM)",
+                "keyIngredients": ["Hyaluronic Acid", "Squalane"]
+            },
+            {
+                "stepNumber": 4,
+                "stepName": "Sunscreen (SPF 30+)",
+                "category": "Protection",
+                "description": "Essential daily protection against UV damage and hyperpigmentation.",
+                "recommendedFrequency": "Daily (AM), reapply every 2 hours outdoors",
+                "keyIngredients": ["Zinc Oxide", "Titanium Dioxide"]
+            }
+        ],
+        "eveningRoutine": [
+            {
+                "stepNumber": 1,
+                "stepName": "Double Cleanse",
+                "category": "Cleansing",
+                "description": "Removes SPF, makeup, and daily pollutants effectively.",
+                "recommendedFrequency": "Daily (PM)",
+                "keyIngredients": ["Squalane", "Micellar Water"]
+            },
+            {
+                "stepNumber": 2,
+                "stepName": "Targeted Treatment",
+                "category": "Treatment",
+                "description": "Addresses specific skin concerns while the skin repairs overnight.",
+                "recommendedFrequency": "2-3 times a week",
+                "keyIngredients": ["Niacinamide", "Retinol"]
+            },
+            {
+                "stepNumber": 3,
+                "stepName": "Nourishing Moisturizer",
+                "category": "Hydration",
+                "description": "Deeply moisturizes and aids overnight skin regeneration.",
+                "recommendedFrequency": "Daily (PM)",
+                "keyIngredients": ["Ceramides", "Peptides"]
+            }
+        ],
+        "productCategories": [
+            {
+                "category": "Hydrating Cleansers",
+                "purpose": "To clean the skin gently without disrupting the acid mantle.",
+                "suitableIngredients": ["Glycerin", "Aloe Vera", "Ceramides"],
+                "ingredientsToAvoid": ["Sulfates (SLS)", "Denatured Alcohol"]
+            },
+            {
+                "category": "Antioxidant Serums",
+                "purpose": "To neutralize free radicals and prevent oxidative stress.",
+                "suitableIngredients": ["Vitamin C", "Ferulic Acid", "Green Tea Extract"],
+                "ingredientsToAvoid": ["Synthetic Fragrances"]
+            },
+            {
+                "category": "Barrier Creams",
+                "purpose": "To seal in moisture and repair the outermost layer of the skin.",
+                "suitableIngredients": ["Shea Butter", "Colloidal Oatmeal", "Panthenol"],
+                "ingredientsToAvoid": ["Essential Oils (if sensitive)"]
+            }
+        ],
+        "lifestyleGuidance": [
+            {
+                "title": "Sleep Hygiene",
+                "recommendation": "Aim for 7-8 hours of sleep per night.",
+                "impact": "Allows the skin to undergo natural repair and collagen production processes.",
+                "icon": "Moon"
+            },
+            {
+                "title": "Stress Management",
+                "recommendation": "Incorporate stress-reducing activities like meditation or yoga.",
+                "impact": "Lowers cortisol levels, which can reduce inflammation and breakouts.",
+                "icon": "Heart"
+            },
+            {
+                "title": "Environmental Care",
+                "recommendation": "Change pillowcases frequently (every 2-3 days).",
+                "impact": "Prevents bacteria and oil buildup from transferring back to your skin.",
+                "icon": "Home"
+            }
+        ],
+        "nutritionGuidance": [
+            {
+                "category": "Hydration",
+                "foods": ["Water", "Herbal Tea", "Cucumber"],
+                "benefit": "Maintains skin elasticity and flushes out toxins."
+            },
+            {
+                "category": "Omega-3 Fatty Acids",
+                "foods": ["Salmon", "Walnuts", "Chia Seeds"],
+                "benefit": "Reduces inflammation and keeps the skin lipid barrier healthy."
+            },
+            {
+                "category": "Antioxidants",
+                "foods": ["Berries", "Leafy Greens", "Dark Chocolate"],
+                "benefit": "Fights cellular damage and promotes a radiant complexion."
+            }
+        ],
         "is_ollama": False
     }
 

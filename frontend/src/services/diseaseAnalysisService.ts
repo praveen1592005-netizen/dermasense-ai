@@ -12,6 +12,10 @@ import { apiClient } from './apiClient';
 
 const DISEASE_STORAGE_KEY = 'dermasense_disease_analyses_v6';
 
+// AI chat routes are at /api/ai/* (not under /api/v1)
+const _API_BASE = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+const AI_HOST_URL = _API_BASE.replace(/\/api\/v1\/?$/, '');
+
 /**
  * Maps the backend /api/v1/predict response to the frontend ModelPrediction type.
  *
@@ -190,8 +194,13 @@ export const diseaseAnalysisService = {
                   .filter(([, v]) => v && v !== 'no' && v !== 'none' && v !== 'false')
                   .map(([k, v]) => `${k}: ${v}`),
               };
-              const explainResp = await apiClient.post('/ai/explain-result', explainPayload);
-              if (explainResp.success) {
+              const explainFetch = await fetch(`${AI_HOST_URL}/api/ai/explain-result`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(explainPayload),
+              });
+              const explainResp = explainFetch.ok ? await explainFetch.json() : null;
+              if (explainResp?.success) {
                 aiExplanation = explainResp.explanation ?? null;
               }
             } catch {
